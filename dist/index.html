@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#07111f" />
+    <meta name="description" content="2026 年十月拉斯维加斯、锡安、布莱斯、羚羊谷和大峡谷五晚双人自驾执行地图。" />
+    <title>峡谷以西 · 两个人的美国西南公路旅行</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2307111f'/%3E%3Cpath d='M8 47c9-6 15-19 23-27 7 8 12 16 25 27H8Z' fill='%23f06a3e'/%3E%3Cpath d='M18 47c7-6 10-14 15-21 4 7 8 13 14 21H18Z' fill='%23ffc46b'/%3E%3Ccircle cx='47' cy='16' r='6' fill='%23fff4d0'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="topbar">
+      <button class="brand" type="button" data-view="route" aria-label="返回路线总览">
+        <span class="brand-mark">⌁</span>
+        <span><strong>峡谷以西</strong><small>OCT 02 — 07 · 2026</small></span>
+      </button>
+      <nav class="view-nav" aria-label="主导航">
+        <button class="nav-btn is-active" type="button" data-view="route"><span>路线</span></button>
+        <button class="nav-btn" type="button" data-view="today"><span>每日</span></button>
+        <button class="nav-btn" type="button" data-view="bookings"><span>预订</span><b id="bookingCount">0</b></button>
+        <button class="nav-btn" type="button" data-view="budget"><span>预算</span></button>
+      </nav>
+      <button class="icon-button" id="printButton" type="button" aria-label="打印或存成 PDF" title="打印 / 存成 PDF">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>
+      </button>
+    </header>
+
+    <main id="app" aria-live="polite">
+      <section class="view is-active" id="routeView" aria-labelledby="routeTitle">
+        <div class="route-stage">
+          <div class="route-heading">
+            <div>
+              <p class="eyebrow">两个人 · 五晚 · 四州一圈</p>
+              <h1 id="routeTitle">从霓虹灯，<br><em>开进峡谷深处。</em></h1>
+            </div>
+            <div class="trip-stats" aria-label="行程概览">
+              <div><strong>06</strong><span>天</span></div>
+              <div><strong>≈ 1,050</strong><span>英里</span></div>
+              <div><strong>05</strong><span>核心景观</span></div>
+            </div>
+          </div>
+
+          <div class="map-shell">
+            <div class="map-toolbar">
+              <span class="live-pill"><i></i> 行程已锁定</span>
+              <button class="text-button" id="fitRoute" type="button">查看全线</button>
+            </div>
+            <div class="route-map" id="routeMap" role="group" aria-label="可点击的路线地图"></div>
+            <div class="map-legend"><span><i class="legend-drive"></i> 自驾路线</span><span><i class="legend-stop"></i> 点击地点看玩法</span></div>
+            <div class="mobile-place-strip" id="mobilePlaceStrip" aria-label="选择地点"></div>
+          </div>
+        </div>
+
+        <aside class="route-panel" id="routePanel" aria-label="当前地点详情"></aside>
+      </section>
+
+      <section class="view" id="todayView" aria-labelledby="todayTitle">
+        <div class="section-head">
+          <div><p class="eyebrow">EXECUTION MODE</p><h2 id="todayTitle">今天照着走</h2></div>
+          <button class="action-button" id="copyDay" type="button">复制今日行程</button>
+        </div>
+        <div class="day-switcher" id="daySwitcher" role="tablist" aria-label="选择日期"></div>
+        <div class="day-layout">
+          <section class="timeline-card" id="dayTimeline" aria-label="当日时间线"></section>
+          <aside class="day-aside" id="dayAside"></aside>
+        </div>
+      </section>
+
+      <section class="view" id="bookingsView" aria-labelledby="bookingsTitle">
+        <div class="section-head">
+          <div><p class="eyebrow">BOOK BEFORE YOU GO</p><h2 id="bookingsTitle">预订控制台</h2></div>
+          <div class="completion-ring" id="bookingRing" aria-label="预订完成度"></div>
+        </div>
+        <div class="booking-grid" id="bookingGrid"></div>
+        <div class="info-strip"><strong>年卡提醒</strong><span>America the Beautiful 年卡覆盖 Zion、Bryce 和 Grand Canyon 的车辆入园；不覆盖羚羊谷团费、马蹄湾停车、酒店停车或拉斯维加斯费用。</span></div>
+      </section>
+
+      <section class="view" id="budgetView" aria-labelledby="budgetTitle">
+        <div class="section-head">
+          <div><p class="eyebrow">TWO-PERSON TRIP</p><h2 id="budgetTitle">预算驾驶舱</h2></div>
+          <button class="action-button ghost" id="resetBudget" type="button">清空实付</button>
+        </div>
+        <div class="budget-hero">
+          <div><span>推荐预留</span><strong>$3,200 <i>—</i> $3,850</strong><small>双人总计；包含机票、五晚住宿、租车、O 秀与羚羊谷</small></div>
+          <div class="budget-meter"><div class="budget-fill" id="budgetFill"></div><b id="budgetMarker"></b></div>
+          <p id="budgetVerdict">录入实际价格后，这里会判断是否超出推荐区间。</p>
+        </div>
+        <div class="budget-grid">
+          <div class="cost-table" id="costTable"></div>
+          <aside class="budget-summary" id="budgetSummary"></aside>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <footer><span>最后核对：2026-09-15</span><span>出发前 48 小时复查天气、道路与预订</span></footer>
+    <script src="./app.js"></script>
+  </body>
+</html>
