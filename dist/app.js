@@ -1,332 +1,48 @@
-const gm = (query) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-const gd = (origin, destination) => `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
-
-const places = [
-  {
-    id: "vegas", n: 1, x: 180, y: 455, day: "D0—D1", name: "Las Vegas", zh: "拉斯维加斯", symbol: "✦",
-    kicker: "霓虹起点", duration: "1.5 天", effort: "步行为主", park: "不取车",
-    why: "把城市体验集中在第一晚和周六：Strip City Walk、Bellagio 与 21:00 的 O 秀。",
-    steps: ["周五抵达后跟随 Ride App Pickup 标识叫车，先去 Horseshoe 放行李。", "周六从 Paris / Bellagio 一带开始，白天步行串联中段 Strip。", "20:15 前抵达 Bellagio 的 O Theatre；演出后步行或叫车回酒店。"],
-    alert: "周五、周六都不租车。Strip 酒店停车和堵车会增加成本，周日早上再去机场租车中心取车。",
-    map: gm("Horseshoe Las Vegas"), official: "https://bellagio.mgmresorts.com/en/entertainment/o-by-cirque-du-soleil.html"
-  },
-  {
-    id: "zion", n: 2, x: 355, y: 270, day: "D2", name: "Zion", zh: "锡安 · Canyon Overlook", symbol: "◒",
-    kicker: "砂岩巨壁", duration: "1.5–2 小时", effort: "1 mi 往返", park: "隧道东口路肩",
-    why: "不进主峡谷排摆渡车，用短而精华的 Canyon Overlook Trail 看 Zion 的立体峡谷。",
-    steps: ["从 Springdale 方向沿 UT-9 上山，穿过 Zion–Mt. Carmel Tunnel。", "出隧道后立即寻找道路两侧合法小停车位；满位就继续前行掉头再找，绝不占道。", "步道入口就在隧道东口北侧护栏旁；原路往返，观景台停留 15–20 分钟。"],
-    alert: "Zion 与 Bryce 使用山地时间，比 Las Vegas 快 1 小时。不要把车停在隧道口或压实线临停。",
-    map: gm("Canyon Overlook Trailhead Zion"), official: "https://www.nps.gov/zion/planyourvisit/zion-canyon-overlook-trail.htm"
-  },
-  {
-    id: "bryce", n: 3, x: 505, y: 205, day: "D2—D3", name: "Bryce Canyon", zh: "布莱斯峡谷", symbol: "♜",
-    kicker: "石柱剧场", duration: "日落 + 半日徒步", effort: "2.9 mi 环线", park: "Sunset / Sunrise Point",
-    why: "周日先看夕阳把石柱群染红，周一再走进 hoodoos 之间，两次视角完全不同。",
-    image: "https://www.nps.gov/common/uploads/cropped_image/secondary/FE35EFCF-D514-DD31-AD8FC8948876FDDD.jpeg",
-    steps: ["周日把车停 Sunset Point；先沿 Rim Trail 向 Inspiration Point 走，再返回等日落。", "周一停 Sunrise Point，从 Queen’s Garden 下切进入石柱群。", "接 Navajo Loop，经 Two Bridges 爬回 Sunset Point；若 Wall Street 开放，也只二选一，不重复绕行。"],
-    alert: "海拔约 8,000 英尺，十月早晚可能接近冰点。日落后道路很暗，头灯和保暖层必须随身。",
-    map: gm("Sunset Point Bryce Canyon National Park"), official: "https://www.nps.gov/brca/planyourvisit/day-hikes.htm"
-  },
-  {
-    id: "antelope", n: 4, x: 710, y: 335, day: "D3", name: "Lower Antelope", zh: "下羚羊谷", symbol: "≈",
-    kicker: "光与岩壁", duration: "约 1–1.5 小时", effort: "导览步行", park: "Ken’s Tours 专用停车场",
-    why: "在狭窄砂岩缝隙里看波浪纹理与橙红光线；必须跟纳瓦霍向导进入。",
-    steps: ["导航到 Ken’s Tours Lower Antelope Canyon，免费停在访客停车区。", "15:15 前到柜台签到，带订单和带照片证件；16:00 团绝不能迟到。", "跟团下金属楼梯并单向穿越峡谷；听从向导安排拍照，出口后步行回接待区。"],
-    alert: "Page 与大峡谷全年采用 Arizona 时间；十月比 Bryce / Zion 慢 1 小时。峡谷内没有自由脱团活动。",
-    map: gm("Ken's Tours Lower Antelope Canyon"), official: "https://lowerantelope.com/tours/"
-  },
-  {
-    id: "horseshoe", n: 5, x: 690, y: 385, day: "D4", name: "Horseshoe Bend", zh: "马蹄湾", symbol: "∩",
-    kicker: "科罗拉多弯道", duration: "1.5 小时", effort: "1.5 mi 往返", park: "City of Page 收费停车场",
-    why: "站在千尺悬崖边，看科罗拉多河完成接近 270° 的巨大转弯。",
-    steps: ["从 US-89 转入 Horseshoe Bend Parking Lot，现场按车型付停车费。", "沿铺装与硬土混合步道下坡约 0.75 英里；全程无遮阴。", "先到有护栏的主观景台，再在安全范围内向两侧移动找角度，原路返回。"],
-    alert: "停车费不含在国家公园年卡内。多数悬崖边没有护栏；风大时不要靠边坐或为拍照倒退。",
-    map: gm("Horseshoe Bend Parking Lot"), official: "https://www.cityofpage.org/hsb"
-  },
-  {
-    id: "grand", n: 6, x: 590, y: 470, day: "D4", name: "Grand Canyon", zh: "大峡谷南缘", symbol: "⌄",
-    kicker: "地球剖面", duration: "半日 + 日落", effort: "1.8 mi 往返", park: "Visitor Center Lots 1–4",
-    why: "先沿东入口看横向层次，再从 South Kaibab 走到 Ooh Aah Point，真正下到峡谷壁内。",
-    steps: ["从 Page 经 East Entrance 入园，先停 Desert View Watchtower，再短停 Navajo Point。", "开到 Grand Canyon Visitor Center 的 Lots 1–4，车留在这里。", "乘橙线 Kaibab Rim Route 到 South Kaibab Trailhead，徒步至 Ooh Aah Point 原路返回，再去 Mather Point 等日落。"],
-    alert: "下坡很快、回程全上坡。最迟 16:30 从 Ooh Aah Point 折返；带足水，日落后不要继续在无灯步道内行走。",
-    map: gm("Grand Canyon Visitor Center Parking Lot 1"), official: "https://www.nps.gov/grca/planyourvisit/kaibab-orange-route.htm"
-  },
-  {
-    id: "route66", n: 7, x: 365, y: 530, day: "D5", name: "Route 66", zh: "Williams + Seligman", symbol: "66",
-    kicker: "返程彩蛋", duration: "3–3.5 小时含午餐", effort: "轻松散步", park: "主街路边车位",
-    why: "把返程拆成两个有性格的小镇停靠：铁路小镇 Williams 与保留老公路气质的 Seligman。",
-    steps: ["Williams 停 Historic Downtown / Route 66 主街附近，咖啡加短走。", "继续到 Seligman，拍老车、招牌和 Roadkill Café 一带街景。", "在 Westside Lilo’s 吃早午餐，12:00 前出发；晚了就取消 Hoover Dam。"],
-    alert: "这一天的硬截止是 16:30 还车。任何前段延误都优先砍掉 Hoover Dam 外观停靠。",
-    map: gm("Historic Seligman Sundries"), official: "https://www.visitarizona.com/places/cities/seligman/"
-  },
-  {
-    id: "hoover", n: 8, x: 205, y: 500, day: "D5 · 可选", name: "Hoover Dam", zh: "胡佛大坝外观", symbol: "≋",
-    kicker: "最后一站", duration: "30–40 分钟", effort: "短步行", park: "Bridge Trail Parking",
-    why: "从 Mike O’Callaghan–Pat Tillman Memorial Bridge 步道俯瞰大坝；只做外观，不参加内部 tour。",
-    steps: ["只有导航预计 15:00 前抵达时才执行。", "停 Bridge Trail Parking，沿带楼梯的步道走上纪念桥人行道。", "在中部看大坝后原路返回，15:30 必须离开去租车中心。"],
-    alert: "如果气温高、停车位满或 Seligman 出发晚，直接跳过。机场与还车时间优先。",
-    map: gm("Mike O'Callaghan-Pat Tillman Memorial Bridge Parking"), official: "https://www.usbr.gov/lc/hooverdam/service/"
-  }
-];
-
-const days = [
-  {
-    index: 0, date: "10/02", weekday: "周五", label: "抵达 Vegas", title: "落地，先把节奏放慢", subtitle: "不取车 · 机场叫车 · 入住后吃饭", zone: "太平洋时间 PDT", overnight: "Horseshoe Las Vegas · 第 1 晚", stayNote: "位置便于步行串联中段 Strip；叫车在酒店指定 Ride Share 区上下。",
-    stayMap: gm("Horseshoe Las Vegas"), stayOfficial: "https://www.caesars.com/horseshoe-las-vegas",
-    meals: [["🍜","晚餐","Grand Lux Café（Venetian）；太晚则在 LINQ Promenade 就近解决"]],
-    drives: [["LAS → Horseshoe","约 15–25 分钟","Ride App；晚高峰预留余量"]],
-    events: [
-      ["18:50","抵达 LAS","下机、取行李；不要去租车中心。", gm("Harry Reid International Airport Ride App Pickup"), "机场叫车点"],
-      ["19:35","Ride App Pickup","跟随航站楼 Ride App 标志到指定楼层后再叫车。", "https://www.harryreidairport.com/Transportation/RideShare", "官方说明"],
-      ["20:15","Horseshoe 入住","放行李、补水；确认周六 O 秀电子票。", gm("Horseshoe Las Vegas"), "导航"],
-      ["20:45","晚餐 + 轻量夜景","体力好去 Venetian；疲惫就酒店附近吃完休息。", gm("Grand Lux Cafe Venetian"), "餐厅地图"]
-    ]
-  },
-  {
-    index: 1, date: "10/03", weekday: "周六", label: "Vegas + O 秀", title: "从白天的 Strip 走到水上舞台", subtitle: "城市漫步 · 每段可休息 · 21:00 O 秀", zone: "太平洋时间 PDT", overnight: "Horseshoe Las Vegas · 第 2 晚", stayNote: "继续住同一家，不搬酒店；下午可回房休息 60–90 分钟。",
-    stayMap: gm("Horseshoe Las Vegas"), stayOfficial: "https://www.caesars.com/horseshoe-las-vegas",
-    meals: [["🥐","早餐","Mon Ami Gabi：露台看 Bellagio 街景，建议预约"],["🍕","午餐","Eataly at Park MGM：选择多、无需正式套餐"],["🍜","晚餐","Noodles at Bellagio；目标 19:30 前吃完"]],
-    drives: [["全天","步行 + 2 段叫车","欢迎牌往返用车，其余沿 Strip 步行"]],
-    events: [
-      ["09:00","Mon Ami Gabi 早餐","从 Horseshoe 步行到 Paris；吃完直接开始中段 Strip。", gm("Mon Ami Gabi Las Vegas"), "导航"],
-      ["10:30","Welcome to Las Vegas Sign","叫车往返；拍照后不要在南段继续暴走。", gm("Welcome to Fabulous Las Vegas Sign"), "导航"],
-      ["12:00","Park MGM + Eataly","室内休息、午餐；顺路看 New York-New York 外观。", gm("Eataly Las Vegas"), "导航"],
-      ["14:00","Bellagio + Caesars","温室花园、喷泉、Forum Shops；15:30 左右回酒店歇脚。", gm("Bellagio Conservatory & Botanical Gardens"), "导航"],
-      ["17:20","Venetian 运河","恢复体力后再出门；室内外运河选一段即可。", gm("Grand Canal Shoppes at The Venetian"), "导航"],
-      ["18:40","Bellagio 晚餐","用餐后不要再跨酒店；20:15 开始入场。", gm("Noodles Bellagio"), "导航"],
-      ["21:00","O by Cirque du Soleil","电子票提前存手机；演出约 90 分钟。", "https://bellagio.mgmresorts.com/en/entertainment/o-by-cirque-du-soleil.html", "官方门票"]
-    ]
-  },
-  {
-    index: 2, date: "10/04", weekday: "周日", label: "Zion → Bryce", title: "离开霓虹，进入巨壁与石柱", subtitle: "取车 · Canyon Overlook · Bryce 日落", zone: "Zion / Bryce 为 MDT，比 Vegas 快 1 小时", overnight: "Best Western Plus Ruby’s Inn · 第 3 晚", stayNote: "Bryce 入口外约 1 英里，免费停车；入住后在园区内吃晚餐。",
-    stayMap: gm("Best Western Plus Ruby's Inn"), stayOfficial: "https://www.bestwestern.com/en_US/book/hotel-details.45040.html",
-    meals: [["☕","早餐","酒店附近快速解决；不要安排长早午餐"],["🥪","午餐","提前买好三明治，在 Hurricane / Springdale 路上吃"],["🥩","晚餐","Cowboy’s Buffet & Steak Room at Ruby’s Inn"]],
-    drives: [["Horseshoe → 租车中心","约 15 分钟","Ride App"],["LAS → Zion","约 2 小时 45 分","另加 1 小时时差"],["Zion → Bryce","约 1 小时 50 分","UT-9 / US-89 / UT-12"]],
-    warning: "若 13:45 MDT 仍未到 Zion 隧道东口，Canyon Overlook 只走到观景点即返；若晚于 15:30 离开 Zion，直接去 Bryce 的 Sunset Point。",
-    events: [
-      ["08:30","LAS Rent-A-Car Center 取车","从 Horseshoe 叫车过去；拍四角视频，确认备胎与油量。", gm("Harry Reid Rent A Car Center"), "导航"],
-      ["09:20 PDT","离开 Las Vegas","加油、买水和第二天徒步午餐；之后直奔 Zion。", gd("Harry Reid Rent A Car Center","Canyon Overlook Trailhead Zion"), "驾车路线"],
-      ["13:05 MDT","Canyon Overlook Trail","隧道东口找合法车位；1 英里原路往返，游玩 1.5–2 小时。", gm("Canyon Overlook Trailhead Zion"), "停车 / 入口"],
-      ["15:15 MDT","前往 Bryce","沿 UT-9 东行，不回 Springdale；途中只安排一次短休。", gd("Canyon Overlook Trailhead Zion","Sunset Point Bryce Canyon"), "驾车路线"],
-      ["17:25 MDT","Bryce 日落","停 Sunset Point；沿 Rim Trail 走到 Inspiration Point 再返回。", gm("Sunset Point Bryce Canyon"), "停车"],
-      ["日落后","Ruby’s Inn 入住 + 晚餐","天黑后路面可能结霜，慢开；前台确认早餐时间。", gm("Cowboy's Buffet & Steak Room"), "餐厅"]
-    ]
-  },
-  {
-    index: 3, date: "10/05", weekday: "周一", label: "Bryce → Page", title: "走进 hoodoos，下午穿越羚羊谷", subtitle: "Queen’s / Navajo Loop · 时区奖励 1 小时 · 16:00 团", zone: "到 Page 后切回 MST，钟表慢 1 小时", overnight: "Hampton Inn & Suites Page · 第 4 晚", stayNote: "靠近 US-89、马蹄湾与羚羊谷；免费停车和早餐。贵重物品交前台或随身带。",
-    stayMap: gm("Hampton Inn & Suites Page Lake Powell"), stayOfficial: "https://www.hilton.com/en/hotels/pgalphx-hampton-suites-page-lake-powell/",
-    meals: [["🥞","早餐","Ruby’s Inn 自助早餐；08:30 前结束"],["🥪","午餐","前一天备好的简餐，徒步后在车内或野餐区吃"],["🍖","晚餐","Big John’s Texas BBQ；忙时可外带"]],
-    drives: [["Ruby’s → Bryce","约 10 分钟","UT-63"],["Bryce → Page","约 2 小时 40 分","跨时区，抵达钟表慢 1 小时"]],
-    warning: "12:30 MDT 必须驶离 Bryce。导航会自动改成 Arizona 时间，但请手动确认；Ken’s Tours 按 Page 当地时间签到。",
-    events: [
-      ["09:00 MDT","Queen’s Garden 下切","停 Sunrise Point；沿标识下行，看 Queen Victoria 岩柱。", gm("Sunrise Point Bryce Canyon"), "停车 / 入口"],
-      ["10:05 MDT","接 Navajo Loop","往 Sunset Point 方向，经 Two Bridges 爬升；全程约 2.9 英里。", "https://www.nps.gov/brca/planyourvisit/day-hikes.htm", "官方步道"],
-      ["12:00 MDT","回到 Rim + 午餐","补水、换干衣、上厕所；12:30 准时发车。", gd("Sunset Point Bryce Canyon","Ken's Tours Lower Antelope Canyon"), "去 Page"],
-      ["14:15 MST","Page 入住 / 寄存行李","先把贵重物品和行李处理好，再去羚羊谷。", gm("Hampton Inn & Suites Page Lake Powell"), "酒店"],
-      ["15:15 MST","Ken’s Tours 签到","订单、证件、水准备好；背包与三脚架按现场规定处理。", gm("Ken's Tours Lower Antelope Canyon"), "停车"],
-      ["16:00 MST","Lower Antelope General Tour","跟团下楼梯、单向穿越；约 1–1.5 小时。", "https://lowerantelope.com/tours/", "官方门票"],
-      ["18:15 MST","Big John’s 晚餐","这晚不加景点；吃完补给，早点休息。", gm("Big John's Texas BBQ Page"), "导航"]
-    ]
-  },
-  {
-    index: 4, date: "10/06", weekday: "周二", label: "Page → 大峡谷", title: "从河湾，走进真正的大峡谷", subtitle: "马蹄湾 · Desert View · Ooh Aah Point · Mather 日落", zone: "全天 Arizona MST，无时差", overnight: "The Squire at Grand Canyon · 第 5 晚", stayNote: "Tusayan 位于南门外，省去夜车回 Vegas；晚餐和休息都在酒店内完成。",
-    stayMap: gm("The Squire at Grand Canyon"), stayOfficial: "https://www.visitgrandcanyon.com/stay/squire/",
-    meals: [["🥣","早餐","Hampton 免费早餐；08:30 前退房"],["🥗","午餐","Desert View Market / 车上简餐，控制在 35 分钟"],["🍔","晚餐","Squire Pub + Social；徒步后不用再开车找饭"]],
-    drives: [["Page → Horseshoe Bend","约 10 分钟","US-89"],["马蹄湾 → Desert View","约 2 小时","US-89 / AZ-64"],["Desert View → Visitor Center","约 35–45 分钟","Desert View Drive"]],
-    warning: "Ooh Aah Point 回程全上坡。15:45 仍未坐上橙线就取消下峡谷徒步，改为 Mather Point 与 Rim Trail；日落后直接去 Tusayan。",
-    events: [
-      ["09:00 MST","Horseshoe Bend","停 City of Page 收费停车场；1.5 英里往返，无树荫。", gm("Horseshoe Bend Parking Lot"), "停车"],
-      ["10:40 MST","出发去大峡谷","加满油、下载离线地图；走东入口避免折返。", gd("Horseshoe Bend Parking Lot","Desert View Watchtower"), "驾车路线"],
-      ["12:40 MST","Desert View Watchtower","年卡 + 证件备查；看第一眼大峡谷并简单午餐。", gm("Desert View Watchtower"), "停车"],
-      ["13:45 MST","Navajo Point → Visitor Center","Navajo Point 快停 10–15 分钟，之后不停站直达 Lots 1–4。", gd("Navajo Point Grand Canyon","Grand Canyon Visitor Center Parking Lot 1"), "驾车路线"],
-      ["15:00 MST","橙线到 South Kaibab","车留 Visitor Center；搭 Kaibab Rim Route 橙线。", "https://www.nps.gov/grca/planyourvisit/kaibab-orange-route.htm", "摆渡车"],
-      ["15:30 MST","徒步 Ooh Aah Point","1.8 英里往返；观景后原路爬回，预留 2 小时。", gm("South Kaibab Trailhead"), "步道口"],
-      ["17:45 MST","Mather Point 日落","回 Visitor Center 后步行到观景台；天黑后取车去 Tusayan。", gm("Mather Point"), "观景台"]
-    ]
-  },
-  {
-    index: 5, date: "10/07", weekday: "周三", label: "Route 66 → LAS", title: "用老公路收尾，晚上飞回湾区", subtitle: "Williams · Seligman · 可选 Hoover · 19:55 起飞", zone: "Arizona 与 Las Vegas 当天同为 UTC−7", overnight: "当晚回到湾区", stayNote: "航班 19:55 LAS → 21:30 SJC；目标 16:30 完成还车，最晚 17:15 进入航站楼。",
-    stayMap: gm("Harry Reid International Airport"), stayOfficial: "https://www.harryreidairport.com/",
-    meals: [["🍳","早餐","Squire 酒店早餐；08:00 准时发车"],["🍔","午餐","Westside Lilo’s Café, Seligman；若排队就外带"]],
-    drives: [["Tusayan → Williams","约 1 小时","AZ-64 / I-40"],["Williams → Seligman","约 45 分钟","I-40"],["Seligman → LAS 租车中心","约 3 小时","含可选 Hoover 需再加 30–45 分钟"]],
-    warning: "12:00 未离开 Seligman，或导航显示 15:00 后才到 Hoover Bridge Parking，立即取消 Hoover，直接还车。",
-    events: [
-      ["08:00 MST","离开 Tusayan","油量至少半箱；先导航 Williams Historic Downtown。", gd("The Squire at Grand Canyon","Williams Historic Downtown"), "驾车路线"],
-      ["09:05 MST","Williams 短走","主街路边合法车位；咖啡、铁路站和 Route 66 招牌。", gm("Williams Historic Downtown"), "停车"],
-      ["10:30 MST","Seligman + 早午餐","主街拍照，Westside Lilo’s 吃饭；12:00 硬离开。", gm("Westside Lilo's Cafe Seligman"), "导航"],
-      ["14:40 PDT","可选 Hoover Bridge","只从纪念桥看大坝；30–40 分钟封顶。", gm("Mike O'Callaghan-Pat Tillman Memorial Bridge Parking"), "停车"],
-      ["16:00 PDT","租车中心还车","加满油、拍里程与车况；搭机场接驳。", gm("Harry Reid Rent A Car Center"), "导航"],
-      ["17:15 PDT","抵达航站楼","安检、吃简餐；19:55 起飞，21:30 抵达 SJC。", gm("Harry Reid International Airport"), "机场"]
-    ]
-  }
-];
-
-const bookings = [
-  ["flight","往返机票","SJC ⇄ LAS","锁定 10/02 18:50 抵达、10/07 19:55 起飞；座位与行李规则一起确认。","现在","https://www.google.com/travel/flights"],
-  ["show","O 秀 · Bellagio","10/03 · 21:00","只在 MGM / Bellagio 官方页选票；目标提前 45 分钟到剧场。","现在","https://bellagio.mgmresorts.com/en/entertainment/o-by-cirque-du-soleil.html"],
-  ["tour","Lower Antelope General Tour","10/05 · 16:00 · 2 人","Ken’s Tours；截图价格两人 $161。到场签到时间以订单为准。","现在","https://lowerantelope.com/tours/"],
-  ["hotel","Horseshoe Las Vegas","10/02–10/04 · 2 晚","比较含 resort fee、税与取消政策后的全包价。","本周","https://www.caesars.com/horseshoe-las-vegas"],
-  ["hotel","Best Western Plus Ruby’s Inn","10/04 · 1 晚","位置优先，避免日落后长距离夜车；确认早餐和停车。","本周","https://www.bestwestern.com/en_US/book/hotel-details.45040.html"],
-  ["hotel","Hampton Inn & Suites Page","10/05 · 1 晚","免费早餐、停车；预订可取消房型。","本周","https://www.hilton.com/en/hotels/pgalphx-hampton-suites-page-lake-powell/"],
-  ["hotel","The Squire at Grand Canyon","10/06 · 1 晚","Tusayan 南门外；确认 amenity fee 与停车全包价。","本周","https://www.visitgrandcanyon.com/stay/squire/"],
-  ["car","租车 · LAS Airport","10/04 08:30 → 10/07 16:30","选择无限里程；把异地费、税、保险口径和额外驾驶人算进总价。","本周","https://www.harryreidairport.com/Transportation/RentalCars"],
-  ["meal","Mon Ami Gabi","10/03 · 09:00","露台优先；没有合适时间就现场候位，不影响主行程。","可选","https://www.monamigabi.com/las-vegas/"],
-];
-
-const costs = [
-  ["往返机票（2 人）",450,700], ["租车 + 税费",320,480], ["汽油",150,190],
-  ["住宿 5 晚全包",890,1340], ["O 秀（2 人）",300,500], ["羚羊谷（2 人）",161,200],
-  ["餐饮",420,600], ["停车 / resort fee / 叫车",180,280], ["机动与小额门票",80,120]
-];
-
-let activeView = "route";
-let activePlace = places[0].id;
-let activeDay = 0;
-let toastTimer;
-
-const bookingState = JSON.parse(localStorage.getItem("canyon-west-bookings") || "{}");
-const budgetState = JSON.parse(localStorage.getItem("canyon-west-budget") || "{}");
-
-function escapeHTML(value) {
-  return String(value).replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
-}
-
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  toast.textContent = message;
-  toast.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("show"), 1900);
-}
-
-function switchView(view) {
-  activeView = view;
-  document.querySelectorAll(".view").forEach(el => el.classList.toggle("is-active", el.id === `${view}View`));
-  document.querySelectorAll("[data-view]").forEach(el => el.classList.toggle("is-active", el.dataset.view === view));
-  window.scrollTo({top: 0, behavior: "auto"});
-}
-
-function renderMap() {
-  const path = places.map((p, i) => `${i ? "L" : "M"} ${p.x} ${p.y}`).join(" ") + " L 180 455";
-  const stops = places.map(p => {
-    const labelWidth = Math.max(82, p.name.length * 7.3 + 20);
-    const lx = Math.min(930 - labelWidth / 2, Math.max(70 + labelWidth / 2, p.x));
-    const ly = p.y < 260 ? p.y + 53 : p.y - 49;
-    return `<g class="route-stop ${p.id === activePlace ? "is-active" : ""}" data-place="${p.id}" tabindex="0" role="button" aria-label="查看 ${p.zh}">
-      <circle class="halo" cx="${p.x}" cy="${p.y}" r="29"/><circle class="dot" cx="${p.x}" cy="${p.y}" r="14"/><text class="num" x="${p.x}" y="${p.y + .5}">${p.n}</text>
-      <rect class="label-bg" x="${lx-labelWidth/2}" y="${ly-14}" width="${labelWidth}" height="28" rx="14"/><text class="label" x="${lx}" y="${ly+1}">${p.name}</text>
-      <text class="map-day" x="${p.x + 20}" y="${p.y + 5}">${p.day}</text></g>`;
-  }).join("");
-  document.getElementById("routeMap").innerHTML = `<svg class="route-svg" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet"><title>拉斯维加斯、锡安、布莱斯、Page、大峡谷与 Route 66 环线路线图</title>
-    <defs><linearGradient id="routeGradient" x1="0" x2="1"><stop stop-color="#82d4ee"/><stop offset=".4" stop-color="#ffc56e"/><stop offset="1" stop-color="#ef6a43"/></linearGradient></defs>
-    <path class="map-state" d="M78 96L290 72 410 132 535 82 700 100 924 185M92 390L928 390M298 68L312 568M690 102L674 574"/>
-    <text x="135" y="120" fill="#536879" font-size="19" font-weight="800">NEVADA</text><text x="386" y="116" fill="#536879" font-size="19" font-weight="800">UTAH</text><text x="702" y="124" fill="#536879" font-size="19" font-weight="800">ARIZONA</text>
-    <path class="map-route-shadow" d="${path}"/><path class="map-route" d="${path}"/>${stops}
-  </svg>`;
-  document.querySelectorAll(".route-stop").forEach(stop => {
-    const select = () => { activePlace = stop.dataset.place; renderMap(); renderPlace(); };
-    stop.addEventListener("click", select);
-    stop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(); } });
-  });
-  document.getElementById("mobilePlaceStrip").innerHTML = places.map(p => `<button class="mobile-place-btn ${p.id === activePlace ? "is-active" : ""}" type="button" data-mobile-place="${p.id}">${p.zh.replace(" · Canyon Overlook", "")}</button>`).join("");
-  document.querySelectorAll("[data-mobile-place]").forEach(button => button.addEventListener("click", () => {
-    activePlace = button.dataset.mobilePlace;
-    renderMap();
-    renderPlace();
-    document.getElementById("routePanel").scrollIntoView({behavior:"smooth", block:"start"});
-  }));
-}
-
-function renderPlace() {
-  const p = places.find(item => item.id === activePlace);
-  const visual = p.image ? `<img src="${p.image}" alt="${p.zh}景观" loading="eager" referrerpolicy="no-referrer"/>` : "";
-  document.getElementById("routePanel").innerHTML = `<div class="place-visual">${visual}<span class="place-symbol">${p.symbol}</span></div>
-    <div class="panel-body">
-      <div class="place-kicker"><span>${p.kicker}</span><span>${p.day}</span></div><h2 class="place-title">${p.zh}</h2><p class="place-why">${p.why}</p>
-      <div class="fact-row"><div class="fact"><b>${p.duration}</b><span>建议游玩</span></div><div class="fact"><b>${p.effort}</b><span>活动强度</span></div><div class="fact"><b>${p.park}</b><span>停车方式</span></div></div>
-      <ol class="plan-list">${p.steps.map(step => `<li>${step}</li>`).join("")}</ol><p class="panel-alert">${p.alert}</p>
-      <div class="panel-actions"><a class="link-button" href="${p.map}" target="_blank" rel="noopener">打开地图 ↗</a><a class="link-button secondary" href="${p.official}" target="_blank" rel="noopener">官方信息</a></div>
-    </div>`;
-}
-
-function renderDaySwitcher() {
-  document.getElementById("daySwitcher").innerHTML = days.map(d => `<button class="day-tab ${d.index === activeDay ? "is-active" : ""}" role="tab" aria-selected="${d.index === activeDay}" data-day="${d.index}"><b>${String(d.index).padStart(2,"0")}</b><strong>${d.date} ${d.weekday}</strong><small>${d.label}</small></button>`).join("");
-  document.querySelectorAll(".day-tab").forEach(tab => tab.addEventListener("click", () => { activeDay = Number(tab.dataset.day); renderDaySwitcher(); renderDay(); }));
-}
-
-function renderDay() {
-  const d = days[activeDay];
-  const firstPlace = places.find(p => p.day.includes(`D${activeDay}`));
-  const bg = firstPlace?.image ? `url('${firstPlace.image}')` : "linear-gradient(135deg, rgba(15,48,70,.65), rgba(239,106,67,.12))";
-  document.getElementById("dayTimeline").innerHTML = `<div class="day-banner" style="--day-image:${bg}"><div><p class="eyebrow">DAY ${d.index} · ${d.date} ${d.weekday}</p><h3>${d.title}</h3><p>${d.subtitle}</p></div><span class="clock-chip">${d.zone}</span></div>
-    <div class="timeline">${d.events.map(e => `<article class="timeline-item"><time class="timeline-time">${e[0]}</time><i class="timeline-dot"></i><div class="timeline-copy"><h4>${e[1]}</h4><p>${e[2]}</p><div class="timeline-actions"><a href="${e[3]}" target="_blank" rel="noopener">${e[4]} ↗</a></div></div></article>`).join("")}</div>`;
-
-  document.getElementById("dayAside").innerHTML = `<section><div class="side-title"><h3>🚗 驾驶节奏</h3><span>不含排队</span></div>${d.drives.map(x => `<div class="road-segment"><b>${x[0]}</b><span>${x[1]}</span><small>${x[2]}</small></div>`).join("")}</section>
-    <section><div class="side-title"><h3>🍴 今天吃什么</h3><span>按路线安排</span></div>${d.meals.map(m => `<div class="meal"><i>${m[0]}</i><div><b>${m[1]}</b><span>${m[2]}</span></div></div>`).join("")}</section>
-    <section><div class="side-title"><h3>⌂ 今晚住哪里</h3><span>${d.index < 5 ? "已选区域" : "返程"}</span></div><div class="stay-card"><b>${d.overnight}</b><p>${d.stayNote}</p><div><a href="${d.stayMap}" target="_blank" rel="noopener">地图 ↗</a> · <a href="${d.stayOfficial}" target="_blank" rel="noopener">官网 ↗</a></div></div></section>
-    ${d.warning ? `<section class="time-warning"><strong>硬截止：</strong>${d.warning}</section>` : ""}`;
-}
-
-function renderBookings() {
-  const done = bookings.filter((_, i) => bookingState[i]).length;
-  document.getElementById("bookingCount").textContent = done;
-  const pct = Math.round(done / bookings.length * 100);
-  const ring = document.getElementById("bookingRing");
-  ring.style.setProperty("--progress", `${pct * 3.6}deg`);
-  ring.dataset.label = `${done}/${bookings.length}`;
-  document.getElementById("bookingGrid").innerHTML = bookings.map((b, i) => `<article class="booking-card" data-order="${String(i+1).padStart(2,"0")}"><div class="booking-top"><span class="booking-type">${b[0].toUpperCase()}</span><button class="check-button ${bookingState[i] ? "is-done" : ""}" type="button" data-booking="${i}" aria-label="${bookingState[i] ? "标记为未完成" : "标记为已预订"}">${bookingState[i] ? "✓" : ""}</button></div><h3>${b[1]}</h3><p><strong>${b[2]}</strong><br>${b[3]}</p><div class="booking-meta"><span>${b[4]}</span><a href="${b[5]}" target="_blank" rel="noopener">去官网 ↗</a></div></article>`).join("");
-  document.querySelectorAll(".check-button").forEach(btn => btn.addEventListener("click", () => {
-    const i = btn.dataset.booking;
-    bookingState[i] = !bookingState[i];
-    localStorage.setItem("canyon-west-bookings", JSON.stringify(bookingState));
-    renderBookings();
-    showToast(bookingState[i] ? "已标记为完成" : "已取消完成标记");
-  }));
-}
-
-function renderBudget() {
-  document.getElementById("costTable").innerHTML = `<div class="cost-row header"><span>项目</span><span>参考低位</span><span>参考高位</span><span>实际支付</span></div>${costs.map((c, i) => `<label class="cost-row"><b>${c[0]}</b><span>$${c[1].toLocaleString()}</span><span>$${c[2].toLocaleString()}</span><input type="number" min="0" step="1" inputmode="decimal" data-cost="${i}" value="${budgetState[i] ?? ""}" placeholder="$" aria-label="${c[0]}实际支付金额"/></label>`).join("")}`;
-  document.querySelectorAll("[data-cost]").forEach(input => input.addEventListener("input", () => {
-    budgetState[input.dataset.cost] = input.value;
-    localStorage.setItem("canyon-west-budget", JSON.stringify(budgetState));
-    updateBudgetSummary();
-  }));
-  updateBudgetSummary();
-}
-
-function updateBudgetSummary() {
-  const actual = costs.reduce((sum, _, i) => sum + (Number(budgetState[i]) || 0), 0);
-  const entered = costs.filter((_, i) => Number(budgetState[i]) > 0).length;
-  const low = costs.reduce((sum, c) => sum + c[1], 0);
-  const high = costs.reduce((sum, c) => sum + c[2], 0);
-  const perPerson = actual / 2;
-  document.getElementById("budgetSummary").innerHTML = `<div class="summary-total"><span>当前已录入 · ${entered}/${costs.length} 项</span><strong>$${actual.toLocaleString()}</strong></div><div class="summary-line"><span>每人</span><b>$${Math.round(perPerson).toLocaleString()}</b></div><div class="summary-line"><span>逐项参考合计</span><b>$${low.toLocaleString()}–$${high.toLocaleString()}</b></div><div class="summary-line"><span>推荐预留</span><b>$3,200–$3,850</b></div><p class="budget-note">$2,000–$2,500 无法稳妥保留 O 秀、羚羊谷、往返机票和五晚位置便利住宿。若要压缩，优先用积分、降低 Vegas 酒店价和机票价。</p>`;
-  const pct = actual ? Math.min(100, actual / 4660 * 100) : 0;
-  document.getElementById("budgetFill").style.width = `${pct}%`;
-  const marker = document.getElementById("budgetMarker");
-  marker.style.left = `${pct}%`;
-  marker.style.opacity = actual ? 1 : 0;
-  const verdict = document.getElementById("budgetVerdict");
-  if (!actual) verdict.textContent = "录入实际价格后，这里会判断是否超出推荐区间。";
-  else if (entered < costs.length) verdict.textContent = `已录入 ${entered} 项；还差 ${costs.length-entered} 项，当前金额不是最终总价。`;
-  else if (actual < 3200) verdict.textContent = "控制得很好，低于推荐预留；再留约 $150–$250 机动金。";
-  else if (actual <= 3850) verdict.textContent = "位于推荐区间，舒适度与行程完整度比较平衡。";
-  else verdict.textContent = "超过推荐区间；优先复核酒店全包价、机票和 O 秀座位档位。";
-}
-
-function copyCurrentDay() {
-  const d = days[activeDay];
-  const text = [`${d.date} ${d.weekday}｜${d.title}`, d.subtitle, "", ...d.events.map(e => `${e[0]}  ${e[1]}：${e[2]}`), "", `住宿：${d.overnight}`, `时区：${d.zone}`].join("\n");
-  navigator.clipboard?.writeText(text).then(() => showToast("今日行程已复制")).catch(() => showToast("浏览器未允许复制，请手动选择"));
-}
-
-function init() {
-  renderMap(); renderPlace(); renderDaySwitcher(); renderDay(); renderBookings(); renderBudget();
-  document.querySelectorAll("[data-view]").forEach(btn => btn.addEventListener("click", () => switchView(btn.dataset.view)));
-  document.getElementById("fitRoute").addEventListener("click", () => { activePlace = places[0].id; renderMap(); renderPlace(); showToast("已回到路线起点"); });
-  document.getElementById("copyDay").addEventListener("click", copyCurrentDay);
-  document.getElementById("printButton").addEventListener("click", () => window.print());
-  document.getElementById("resetBudget").addEventListener("click", () => { Object.keys(budgetState).forEach(k => delete budgetState[k]); localStorage.removeItem("canyon-west-budget"); renderBudget(); showToast("实付金额已清空"); });
-}
-
-init();
+'use strict';
+const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KEY='canyon-west-2026-v2';
+const initial={done:{},packed:{},confirmed:{},airbnb:'',note:'',railStart:'',view:'overview',day:0};
+let prefs=structuredClone(initial), storageOK=true;
+try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved&&typeof saved==='object')prefs={...initial,...saved};}catch{storageOK=false;}
+let view='overview',day=Number.isInteger(prefs.day)&&prefs.day>=0&&prefs.day<6?prefs.day:0,filter='all',query='',sim=null,expand=false;
+const typeNames={flight:'FLIGHT / 航班',drive:'ON THE ROAD / 驾车',stay:'CHECK IN / 住宿',food:'SLOW DOWN / 吃饭',see:'EXPLORE / 游览',hike:'ON FOOT / 徒步',ticket:'RESERVATION / 预约',transit:'GET AROUND / 交通',rest:'TAKE A BREATH / 休息',car:'CAR RETURN / 还车'};
+const hotel=id=>TRIP.hotels.find(h=>h.id===id);
+function save(){try{localStorage.setItem(KEY,JSON.stringify(prefs));return true;}catch{storageOK=false;toast('浏览器未允许保存；当前操作仅在这次打开期间保留。');return false;}}
+function toast(s){$('#toast').textContent=s;$('#toast').classList.add('visible');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),3500);}
+function place(key){return key==='airbnb'?(prefs.airbnb.trim()||'Hatch, Utah'):P[key]||key;}
+function maps(key,mode='driving',origin=''){let u='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(place(key))+'&travelmode='+mode;if(origin)u+='&origin='+encodeURIComponent(place(origin));return u;}
+function searchMap(key){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(place(key));}
+function mapLink(key,label='打开导航',mode='driving',origin=''){if(!key)return '';if(key==='airbnb'&&!prefs.airbnb.trim())return '<a class="nav-link" href="#kit">＋ 先补民宿地址</a>';return `<a class="nav-link" href="${esc(maps(key,mode,origin))}" target="_blank" rel="noopener noreferrer">↗ ${esc(label)}</a>`;}
+function src(key){const s=TRIP.sources[key];return s?`<a class="source-link" href="${esc(s[1])}" target="_blank" rel="noopener noreferrer">${esc(s[0])} ↗</a>`:'';}
+function zoneLabel(z){return z==='America/Denver'?'MDT':z==='America/Los_Angeles'?'PDT':'MST';}
+function zoned(date,time,z){return new Date(`${date}T${time}:00${z==='America/Denver'?'-06:00':'-07:00'}`);}
+function stamp(d,e,end=false){return zoned(d.date,end?e.end:e.start,end?e.endZone:e.zone);}
+function now(){return sim?new Date(sim):new Date();}
+function shortTime(t,z){return new Intl.DateTimeFormat('zh-CN',{timeZone:z,hour:'2-digit',minute:'2-digit',hour12:false}).format(t);}
+function live(){const t=now();for(const d of DAYS)for(const e of d.events){if(t>=stamp(d,e)&&t<stamp(d,e,true))return {d,e,current:true};if(t<stamp(d,e))return {d,e,current:false};}return null;}
+function currentTripDay(){const t=now();for(const d of DAYS){const start=zoned(d.date,'00:00',d.index===2?'America/Los_Angeles':d.index===3?'America/Denver':d.zone);if(t>=start&&t<new Date(+start+86400000))return d.index;}return null;}
+function duration(d,e){const m=Math.round((stamp(d,e,true)-stamp(d,e))/60000);return m>=60?`${Math.floor(m/60)}小时${m%60?m%60+'分':''}`:`${m}分钟`;}
+function artwork(theme='bryce',large=false){const palette={city:['#cbd2c1','#95a59a','#54756d','#294b43'],bryce:['#eddfb9','#d4a776','#b66a43','#754b39'],antelope:['#e9c591','#d08d5f','#a95330','#693d2d'],grand:['#dbe0c9','#c39f73','#9a6850','#594c3e'],road:['#ddd3b7','#aeae8b','#797f60','#405e4d']}[theme];return `<svg viewBox="0 0 640 ${large?450:230}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="sky-${theme}-${large}" x2="0" y2="1"><stop stop-color="${palette[0]}"/><stop offset="1" stop-color="${palette[1]}"/></linearGradient><pattern id="lines-${theme}-${large}" width="38" height="24" patternUnits="userSpaceOnUse"><path d="M-8 20Q10 2 30 20T68 20" fill="none" stroke="#fff" stroke-opacity=".06"/></pattern></defs><rect width="640" height="500" fill="url(#sky-${theme}-${large})"/><circle cx="475" cy="${large?105:55}" r="${large?42:26}" fill="#faf0d3"/>${theme==='city'?'<path d="M0 260V125h45V85h42v120h30V110h33V75h21v115h27V30h8v30h12v145h39V94h54V75h25v145h27V145h43V55h12v-30h5v30h12v160h31V99h51v100h42v-48h49v-38h45v155Z" fill="'+palette[2]+'"/><path d="M0 500V227h88v-63h58v65h92v-80h58v105h90v-60h90v78h85v-53h79v281Z" fill="'+palette[3]+'"/>':`<path d="M0 210L55 190l20-44 52 1 30-35 50 18 55-11 29 37 45 2 53-23 17 35 43 11 37-31 68 25 30-8 56 21v312H0Z" fill="${palette[1]}"/><path d="M0 500V${large?267:174}l36-20 15-72 25 15 12 54 39-11 19-74 16 25 15-41 17 50 37 7 14 35 48-1 42 16 29-50 30 24 17-62 17 52 21 7 25-15 19 51 42-1 39-40 50 35 17 15v250Z" fill="${palette[2]}"/><path d="M0 500V${large?350:212}l68-22 57 31 65-40 64 20 54-6 77-21 60 39 55-18 75 26 65-20v310Z" fill="${palette[3]}"/><path d="M280 500c-5-65 87-94 76-124s-61-24-52-54 22-40 50-55" fill="none" stroke="#e2d2aa" stroke-opacity=".58" stroke-width="${large?6:4}"/>`}<rect width="640" height="500" fill="url(#lines-${theme}-${large})"/><path d="M32 32h23M32 32v23M608 ${large?418:198}h-23M608 ${large?418:198}v-23" stroke="#fff9e5" stroke-opacity=".55" fill="none"/></svg>`;}
+function liveStrip(){const l=live(),before=now()<zoned(TRIP.start,'18:50','America/Los_Angeles'),after=!l;const text=before?'行李还没上车，期待已经出发。':after?'旅程结束，愿这些风景留得久一点。':`${l.current?'计划此刻':'接下来'} · ${l.d.short} ${l.e.start} ${zoneLabel(l.e.zone)} · ${l.e.title}`;return `<div class="live-strip"><div><strong><i class="live-dot"></i>${sim?'演示时钟 · ':''}${esc(text)}</strong><small>${before?'2026.10.02—10.07 · 五晚住宿已选定':`Vegas / Page ${shortTime(now(),'America/Phoenix')} · Utah ${shortTime(now(),'America/Denver')}`} · 计划提示，不代表GPS或实时路况</small></div><button class="btn" data-action="today">${before?'开始预览':'查看当天'} ↗</button></div>`;}
+function overview(){return `<section class="hero"><div class="hero-copy"><p class="eyebrow">OCTOBER 02 — 07, 2026 / TWO TRAVELERS</p><h1>从霓虹灯，<br>开进<em>峡谷深处。</em></h1><p>这一趟，不再到处翻聊天记录。<br>什么时候出门、在哪里停下、今晚睡在哪，<br>都在这份随身旅行手册里。</p><div class="button-row"><a class="btn primary" href="#daily">翻开每日行程 <span>→</span></a><a class="btn text" href="#stays">五晚，都安排好了 ↗</a></div><div class="trip-stats"><div><strong>06</strong><span>天 · 10月2—7日</span></div><div><strong>05</strong><span>晚 · 四处落脚</span></div><div><strong>03</strong><span>州 · NV / UT / AZ</span></div></div></div><div class="hero-art">${artwork('grand',true)}<div class="art-caption">CANYON COUNTRY · THE LONG WAY HOME<br>为这趟旅程绘制的峡谷插画</div></div></section>${liveStrip()}<section><div class="section-title"><h2>一路向峡谷。</h2><p>一圈主线，不再绕回 Cedar City。<br>点击地点，直接跳到当天。</p></div><div class="route-strip">${[['Las Vegas','10.02—04',0],['Zion','10.04',2],['Bryce','10.04—05',2],['Hatch','10.04 宿',2],['Page','10.05—06',3],['South Rim','10.06',4],['Flagstaff','10.06 宿',4],['Route 66 → LAS','10.07',5]].map((x,i)=>`${i?'<i class="route-dash"></i>':''}<button class="route-stop" data-day="${x[2]}">${x[0]}<span>${x[1]}</span></button>`).join('')}</div><p class="caption">路线顺序示意，非地理比例地图。Hatch 当晚住宿后，次晨回 Bryce 徒步，再去 Page。</p></section><section><div class="section-title"><h2>六天，六种风景。</h2><p>起床、三餐、停车、步道、日落。<br>点开一张，就能开始照着走。</p></div><div class="days-grid">${DAYS.map(d=>`<a href="#daily/${d.index}" class="day-card"><div class="day-art">${artwork(d.theme)}<span class="day-number"><small>DAY ${String(d.index+1).padStart(2,'0')}</small>${d.short}</span></div><div class="day-card-body"><span class="tag">${d.weekday} · ${d.tag}</span><h3>${d.name}</h3><p>${d.route}</p><div class="card-bottom"><span>${d.stay?'⌂ '+hotel(d.stay).name:'↗ 19:50 飞回湾区'}</span><span>查看 →</span></div></div></a>`).join('')}</div></section><div class="overview-bottom"><div class="panel"><p class="eyebrow">THE IMPORTANT PART</p><h2>别让时差偷走一小时。</h2><p><b>10/4</b> Vegas → Utah：钟表拨快1小时。<br><b>10/5</b> Bryce → Page：钟表拨慢1小时。<br><b>10/6–7</b> Page / Flagstaff / Vegas：当天钟表相同。</p><p>跨时区的开车段已经按真实经过时间计算。Ken’s 认 Arizona 时间，手机选择 Phoenix；别跟着附近基站跳到 Utah 时间。</p>${src('ken')}<div class="notice"><strong>不是所有条目都叫“已确认”</strong>酒店已按你的最新选择整理；O 秀21:00、Ken’s16:00仍需要票券核对。民宿精确地址可在本机私密补全。</div><a class="btn" href="#kit">核对出发事项 →</a></div><div class="panel"><p class="eyebrow">TRAVEL LIGHT</p><h2>给路上的你。</h2><ul class="text-list"><li>逐站导航到酒店、停车场或接待处，不只到景区名字。</li><li>行程可打勾、可筛选，进度仅保存在当前浏览器。</li><li>支持打印六日完整版和下载离线网页，山区没网也可看。</li><li>地图导航需要网络或提前下载 Google 离线地图。</li></ul><div class="button-row"><button class="btn" data-action="offline">下载离线手册 ↓</button><button class="btn" data-action="print">打印 / 存PDF ↗</button></div></div></div>`;}
+function eventCard(d,e){const t=now(),active=t>=stamp(d,e)&&t<stamp(d,e,true),done=!!prefs.done[e.id];let status=e.ticket?(prefs.confirmed[e.ticket]?'场次已由你核对':'场次待订单确认'):e.status;const mode=e.mode||(['rail','harrahs','paris'].includes(e.place)?'walking':'driving');return `<article class="event ${active?'current':''} ${done?'done':''}" id="${e.id}"><div class="event-time"><strong>${e.start}</strong><span>${e.openEnd?zoneLabel(e.zone)+' 起飞<br>到达以机票为准':zoneLabel(e.zone)+' → '+e.end+'<br>'+duration(d,e)+(e.endZone!==e.zone?' · 到达'+zoneLabel(e.endZone):'')}</span>${active?'<b class="status-now">计划此刻</b>':''}</div><div class="event-card"><div class="event-head"><div><div class="event-kicker">${typeNames[e.type]}</div><h3>${esc(e.title)}</h3></div><input class="check" type="checkbox" data-done="${e.id}" ${done?'checked':''} aria-label="标记完成：${esc(e.title)}"></div><p>${esc(e.summary)}</p><div class="event-actions">${mapLink(e.place,e.type==='drive'?'导航到下一站':e.type==='hike'?'停车 / 步道入口':e.type==='food'?'餐厅导航':'打开导航',mode)}${e.secondPlace?mapLink(e.secondPlace,'Grandview 停车场'):''}${e.origin?`<a class="source-link" href="${esc(maps(e.place,'driving',e.origin))}" target="_blank" rel="noopener noreferrer">预览这一段路线</a>`:''}${e.optional?'<span class="tag optional">可删减</span>':''}${status?`<span class="tag ${e.ticket&&prefs.confirmed[e.ticket]?'':'pending'}">${esc(status)}</span>`:''}</div>${e.steps.length?`<details ${expand||['hike','ticket'].includes(e.type)?'open':''}><summary>怎么走、怎么玩 · ${e.steps.length} 条现场提示</summary><ol>${e.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>${e.source?'<p>'+src(e.source)+'</p>':''}</details>`:e.source?`<p>${src(e.source)}</p>`:''}</div></article>`;}
+function sidebar(d){const h=hotel(d.stay),count=d.events.filter(e=>prefs.done[e.id]).length;return `<aside class="side"><div class="side-card"><div class="side-card-content"><p class="eyebrow">TODAY’S PROGRESS</p><strong>${count} / ${d.events.length} 项已走过</strong><div class="progress"><i style="width:${count/d.events.length*100}%"></i></div><p>勾选只记录你的进度，不会跳过、改动任何预约。</p><button class="btn" data-action="jump-now">定位计划当前 / 下一站 ↓</button></div></div>${h?`<div class="side-card"><div class="stay-header"><span>TONIGHT’S ADDRESS / 今晚落脚</span><strong>${esc(h.city)}</strong></div><div class="side-card-content"><h3>${esc(h.name)}</h3><div class="address">${esc(h.private?(prefs.airbnb||h.address):h.address)}</div><p>${esc(h.breakfast)}</p><div class="button-row">${mapLink(h.id,'导航到住宿')}<a class="source-link" href="#stays">查看完整入住信息</a></div></div></div>`:`<div class="side-card"><div class="stay-header"><span>FLY HOME / 返程</span><strong>19:50 · LAS</strong></div><div class="side-card-content"><p>17:45目标到Hertz，不是航司硬规定；随后乘接驳进航站楼。行李托运、安检和登机时间以航司为准。</p>${mapLink('rental','Hertz 还车导航')}</div></div>`}<div class="side-card"><div class="side-card-content"><p class="eyebrow">IF WE’RE RUNNING LATE</p><h3>晚了，就这样减。</h3><p>${esc(d.fallback)}</p></div></div><div class="side-card"><div class="side-card-content"><p class="eyebrow">ON THE TABLE</p>${d.events.filter(e=>e.type==='food').map(e=>`<p><b>${e.start} ${zoneLabel(e.zone)}</b><br><a href="#${e.id}" data-jump="${e.id}">${esc(e.title)} ↗</a></p>`).join('')}</div></div></aside>`;}
+function match(e){const f=filter==='all'||(filter==='food'?e.type==='food':filter==='drive'?['drive','transit','car','flight'].includes(e.type):['see','hike','ticket'].includes(e.type));return f&&(!query||`${e.title} ${e.summary} ${e.steps.join(' ')}`.toLowerCase().includes(query.toLowerCase()));}
+function daily(){const d=DAYS[day];return `<div class="page-heading"><div><p class="eyebrow">YOUR DAILY FIELD NOTES</p><h1>今天，照着这页走。</h1><p>所有时间均为该站当地时间。开车时长是规划估算，路况请点开 Google Maps。</p></div><span class="source-date">${TRIP.verified} 核验</span></div><div class="day-tabs" role="group" aria-label="选择日期">${DAYS.map(x=>`<button class="day-tab ${day===x.index?'active':''}" aria-pressed="${day===x.index}" data-day="${x.index}"><strong>${x.short}</strong><small>${x.weekday.slice(2)}</small><span>${x.name}</span></button>`).join('')}</div>${sim?'<div class="notice"><strong>当前是演示时钟，不是现在的真实时间。</strong><a href="#kit">修改 / 退出演示</a></div>':''}<div class="daily-layout"><div><div class="day-banner"><span class="tag">DAY ${day+1} · ${d.tag}</span><h2>${d.name}</h2><p>${d.intro}</p><div class="metrics"><span>◷ 起床 <b>${d.wake}</b></span><span>↗ <b>${d.drive}</b></span><span>⌁ <b>${d.walk}</b></span></div><p class="caption">${d.zoneLabel}</p></div><div class="notice"><strong>今天最该记住的事</strong><ul>${d.alerts.map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div><div class="toolbar"><div class="filter-row">${[['all','全部'],['food','只看吃饭'],['drive','只看交通'],['see','只看游玩']].map(([k,n])=>`<button class="filter ${filter===k?'active':''}" data-filter="${k}" aria-pressed="${filter===k}">${n}</button>`).join('')}</div><button class="source-link" data-action="expand">${expand?'收起详情':'全部展开'}</button><input class="search" type="search" placeholder="搜索这一天：停车 / 午餐…" aria-label="搜索当日行程" value="${esc(query)}"></div><div class="timeline" id="timeline">${timeline()}</div><div class="button-row">${day>0?`<button class="btn" data-day="${day-1}">← 前一天</button>`:''}${day<5?`<button class="btn primary" data-day="${day+1}">下一天 →</button>`:''}</div></div>${sidebar(d)}</div>`;}
+function timeline(){const d=DAYS[day],list=d.events.filter(match);return list.length?list.map(e=>eventCard(d,e)).join(''):'<div class="empty">这个筛选没有匹配的安排。试试“全部”或清空搜索。</div>';}
+function stays(){return `<div class="page-heading"><div><p class="eyebrow">FIVE NIGHTS / FOUR LITTLE HOMES</p><h1>夜晚，都有一个落脚处。</h1><p>按你的最终选择整理。导航使用酒店官方地址；订单号、门锁密码不放在公开网页。</p></div></div><div class="notice"><strong>住宿已选定 ≠ 网页已核验付款</strong>这里不读取任何酒店账户。最终房型、两位入住人、早餐、取消期限和实付，请再对照你自己的订单。</div><div class="hotel-grid">${TRIP.hotels.map((h,i)=>`<article class="hotel"><div class="hotel-top"><div><p class="eyebrow">${h.city}</p><span class="tag">${h.nights}</span><h2>${h.name}</h2></div><span class="night">0${i+1}</span></div><div class="hotel-body"><p>${h.full}</p><div class="address">${esc(h.private?(prefs.airbnb||h.address):h.address)}</div><div class="hotel-facts"><div><b>CHECK IN / OUT</b>${h.check}</div><div><b>BREAKFAST</b>${h.breakfast}</div><div><b>PARKING</b>${h.parking}</div></div><div class="hotel-note">${h.note}</div><div class="button-row">${mapLink(h.id,'导航到酒店 / 入口')}${!h.private?`<button class="btn" data-copy="${h.id}">复制地址</button>`:'<a class="btn" href="#kit">补充私密地址</a>'}${h.phone?`<a class="source-link" href="tel:${h.phone}">电话联系</a>`:''}</div><p>${src(h.source)}</p><p class="tiny">价格记录：${h.cost}</p><label class="tiny"><input type="checkbox" data-confirm="hotel-${h.id}" ${prefs.confirmed['hotel-'+h.id]?'checked':''}> 我已核对订单日期、2位入住人及取消政策</label></div></article>`).join('')}</div>`;}
+function kit(){return `<div class="page-heading"><div><p class="eyebrow">KEEP IT IN YOUR POCKET</p><h1>上路之前，再确认一下。</h1><p>本页输入只存在当前设备的浏览器；不会上传、不会自动跨设备同步。</p></div></div>${!storageOK?'<div class="notice">当前浏览器不允许本地保存，关闭页面后修改可能丢失。请下载备份。</div>':''}<div class="kit-grid"><div><section class="panel"><h2>订单与私密补充</h2><label>Hatch Airbnb 完整地址（仅本机）<input id="private-address" value="${esc(prefs.airbnb)}" placeholder="从Airbnb已确认订单复制完整门牌，不填门锁密码"></label><p>未填时不会提供误导性的“民宿门口”导航。Hatch 镇名仅是规划地理位置，不能代替门牌。</p><label><input type="checkbox" data-confirm="o" ${prefs.confirmed.o?'checked':''}> 已核对：10/3 21:00 O 秀</label><label><input type="checkbox" data-confirm="ken" ${prefs.confirmed.ken?'checked':''}> 已核对：10/5 16:00 Ken’s 下羚羊谷</label><p>勾选表示你确认了场次，不会向商家预订。若时间不同，应重新调整相关行程，不要只改一张票的标签。</p><label>Monorail 第一次刷24小时票的时间<input id="rail-start" type="datetime-local" value="${esc(prefs.railStart)}"></label><p id="rail-result">${railResult()}</p><label>随手记 / 订单提醒（不要填身份证或付款卡号）<textarea id="private-note" placeholder="例如：房东确认21点可自助入住；餐厅末单时间…">${esc(prefs.note)}</textarea></label><button class="btn primary" data-action="save-private">保存到这台设备</button></section><section class="panel"><h2>行程时钟</h2><p>按计划开始时间突出当前/下一站。仅用于对照，不会追踪位置、获取交通或自动更改预约。</p><div class="sim-row"><label>演示日期<select id="sim-day">${DAYS.map(d=>`<option value="${d.index}" ${day===d.index?'selected':''}>${d.short} ${d.weekday}</option>`).join('')}</select></label><label>当地时间<input type="time" id="sim-time" value="14:20"></label></div><label>这个时间的时区<select id="sim-zone"><option value="America/Phoenix">Page / Flagstaff / Vegas（10月）UTC−7</option><option value="America/Denver">Zion / Bryce / Hatch · UTC−6</option></select></label><div class="button-row"><button class="btn" data-action="simulate">预览此刻的行程</button><button class="btn" data-action="real-time">恢复真实时钟</button></div><p>${sim?'当前处于演示模式；只在本次页面会话生效。':'当前使用真实时钟。旅行开始前默认显示预览。'}</p></section><section class="panel"><h2>离线与备份</h2><p>下载一个可单独打开的 HTML 手册，里面含完整行程和样式。地图、电话和官方链接仍需网络。离线文件不自动带上私密地址；可另行导入本机备份。</p><div class="button-row"><button class="btn primary" data-action="offline">离线手册 ↓</button><button class="btn" data-action="print">六日打印 / PDF</button></div><p>进度备份包含你填写的地址与备注，只发给自己信任的人。</p><div class="button-row"><button class="btn" data-action="export">导出个人进度</button><button class="btn" data-action="import">导入进度</button><input hidden type="file" id="import-file" accept="application/json,.json"></div></section></div><div><section class="panel checklist"><p class="eyebrow">LEAVING NOTHING BEHIND</p><h2>出发清单</h2>${TRIP.packing.map((s,i)=>`<label><input type="checkbox" data-packed="${i}" ${prefs.packed[i]?'checked':''}><span>${s}</span></label>`).join('')}</section><section class="panel"><h2>交通与门票，别混淆</h2><p><b>Monorail：</b>官网手机浏览器买票，扫码进站；不需要专门App。24小时从首次刷票计时，周五至周日运营至次日03:00。${src('railHours')}</p><p><b>周日去取车：</b>直接Uber到7135 Gilespie Street租车中心。本路线不搭108去航站楼后再绕接驳。</p><p><b>国家公园年卡：</b>2026收费规则有变化，不机械沿用旧网页$80。NPS列居民年卡$80、非居民年卡$250；适用资格及证件请按官方核对，有效年卡的同车覆盖规则见FAQ。羚羊谷导览、马蹄湾停车另算。${src('passes')}</p><p><b>费用口径：</b>每日餐费数字是两人的规划区间，含税及注明的小费假设，不是实时价格。酒店实付、停车和信用卡返还分开记；没有读取账单。</p></section><section class="panel notes-list"><h2>这版如何承接上下文</h2>${TRIP.notes.map(([h,p])=>`<details><summary>${h}</summary><p>${p}</p></details>`).join('')}</section></div></div><section class="panel"><div class="section-title"><h2>核验来源与临行复查</h2><p>本次核验：2026.09.20。出发前再看天气、道路、餐厅和运营商通知；这些并非自动实时订阅。</p></div><div class="sources">${Object.keys(TRIP.sources).map(src).join('')}</div></section>`;}
+function railResult(){if(!prefs.railStart)return '尚未记录。例：周五20:50首次进闸 → 周六20:50到期。';const dt=new Date(prefs.railStart+'-07:00');if(Number.isNaN(+dt))return '时间格式不正确，请重新选择。';const exp=new Date(+dt+86400000);return '预计到期：'+new Intl.DateTimeFormat('zh-CN',{timeZone:'America/Los_Angeles',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(exp)+' PDT。到期后的返程另买票。';}
+function render(scroll=false){$('#main').innerHTML=({overview,daily,stays,kit}[view]||overview)();document.querySelectorAll('[data-view]').forEach(n=>{n.classList.toggle('active',n.dataset.view===view);if(n.dataset.view===view)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current');});document.title=`${view==='daily'?DAYS[day].short+' · '+DAYS[day].name:'峡谷以西'} · 2026 西南旅行手册`;if(scroll)window.scrollTo({top:0,behavior:'instant'});}
+function route(){const a=location.hash.slice(1).split('/');if(['overview','daily','stays','kit'].includes(a[0]))view=a[0];else view='overview';if(view==='daily'&&/^\d+$/.test(a[1]||'')&&+a[1]<6)day=+a[1];filter='all';query='';prefs.view=view;prefs.day=day;save();render(true);}
+function chooseDay(i){day=i;filter='all';query='';prefs.day=i;save();const h='#daily/'+i;if(location.hash===h){view='daily';render(true);}else location.hash=h;}
+function jump(id){filter='all';query='';if(view!=='daily')view='daily';render();requestAnimationFrame(()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'center'}));}
+function download(name,text,type){const u=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);}
+async function offline(btn){btn.disabled=true;try{const texts=await Promise.all(['index.html','styles.css','data.js','app.js'].map(async f=>{const r=await fetch('./'+f);if(!r.ok)throw Error('下载失败');return r.text();}));const [html,css,data,js]=texts;const cleanCss=css.replace(/@import[^;]+;/g,'');const out=html.replace('<link rel="stylesheet" href="./styles.css">','<style>'+cleanCss+'</style>').replace('<script defer src="./data.js"></script><script defer src="./app.js"></script>','<script>'+data.replace(/<\/script/gi,'<\\/script')+'\n'+js.replace(/<\/script/gi,'<\\/script')+'<\/script>');download('峡谷以西-2026-离线旅行手册.html',out,'text/html;charset=utf-8');toast('离线手册已生成；在浏览器下载列表中保存。');}catch{toast('当前无法下载资源，请联网后重试；也可先打印为PDF。');}finally{btn.disabled=false;}}
+function printAll(){const p=$('#print-root');p.innerHTML=`<h1>峡谷以西 · 2026.10.02—07</h1><p>两个人 · 五晚住宿 · 版本核验2026.09.20。时间为当地规划时间，不代表路况、已出票或实际已完成。</p><p>重要：O秀10/3 21:00、Ken’s10/5 16:00待票券确认；10/7 19:50起飞。Utah比Vegas/Page快1小时。</p>${DAYS.map(d=>`<section class="print-day"><h2>${d.short} ${d.weekday} · ${d.name}</h2><p class="print-meta">起床 ${d.wake} · ${d.zoneLabel}<br>${d.route}<br>${esc(d.stay?'住宿：'+hotel(d.stay).full+' · '+(d.stay==='airbnb'?(prefs.airbnb||'Hatch民宿门牌待填'):hotel(d.stay).address):'目标17:45 Hertz还车，19:50 LAS起飞')}</p><p>${d.alerts.join('；')}</p>${d.events.map(e=>`<article><h3>${e.start} ${zoneLabel(e.zone)}${e.openEnd?' 起飞':' — '+e.end+' '+zoneLabel(e.endZone)} · ${esc(e.title)}</h3><p>${esc(e.summary)}</p>${e.steps.length?`<ul>${e.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`:''}${e.place?`<p>导航目的地：${esc(place(e.place))}</p><a href="${esc(maps(e.place,e.mode||'driving'))}">Google Maps 导航</a>`:''}</article>`).join('')}<p><b>迟到删减：</b>${d.fallback}</p></section>`).join('')}`;window.print();}
+document.addEventListener('click',async e=>{const b=e.target.closest('button,a');if(!b)return;if(b.dataset.day!==undefined){chooseDay(+b.dataset.day);return;}if(b.dataset.filter){filter=b.dataset.filter;render();return;}if(b.dataset.copy){try{await navigator.clipboard.writeText(place(b.dataset.copy));toast('地址已复制。');}catch{toast('浏览器不允许复制，请长按酒店地址手动复制。');}return;}if(b.dataset.jump){e.preventDefault();jump(b.dataset.jump);return;}switch(b.dataset.action){case 'today':chooseDay(currentTripDay()??0);break;case 'jump-now':{const d=DAYS[day],t=now(),target=d.events.find(x=>stamp(d,x,true)>t)||d.events.at(-1);jump(target.id);break;}case 'expand':expand=!expand;render();break;case 'print':printAll();break;case 'offline':await offline(b);break;case 'save-private':prefs.airbnb=$('#private-address').value.trim();prefs.note=$('#private-note').value;prefs.railStart=$('#rail-start').value;if(save())toast('已保存到当前浏览器，未上传。');$('#rail-result').textContent=railResult();break;case 'simulate':{day=+$('#sim-day').value;const time=$('#sim-time').value;if(!time){toast('请选择演示时间。');break;}sim=zoned(DAYS[day].date,time,$('#sim-zone').value).toISOString();chooseDay(day);break;}case 'real-time':sim=null;toast('已恢复真实时间。');render();break;case 'export':download('canyon-west-personal-backup.json',JSON.stringify({version:2,prefs},null,2),'application/json');toast('备份含私人地址与备注，请妥善保管。');break;case 'import':$('#import-file').click();break;}});
+document.addEventListener('change',async e=>{const el=e.target;if(el.dataset.done){prefs.done[el.dataset.done]=el.checked;save();const pos=window.scrollY;render();window.scrollTo(0,pos);}if(el.dataset.packed!==undefined){prefs.packed[el.dataset.packed]=el.checked;save();}if(el.dataset.confirm){prefs.confirmed[el.dataset.confirm]=el.checked;save();}if(el.id==='import-file'&&el.files[0]){try{if(el.files[0].size>1000000)throw Error();const o=JSON.parse(await el.files[0].text());if(o.version!==2||!o.prefs||typeof o.prefs!=='object')throw Error();const p=o.prefs;const boolMap=(v,allowed)=>Object.fromEntries(Object.entries(v&&typeof v==='object'?v:{}).filter(([k,val])=>allowed.includes(k)&&typeof val==='boolean'));prefs={...initial,airbnb:typeof p.airbnb==='string'?p.airbnb.slice(0,500):'',note:typeof p.note==='string'?p.note.slice(0,10000):'',railStart:typeof p.railStart==='string'&&/^\d{4}-\d\d-\d\dT\d\d:\d\d$/.test(p.railStart)?p.railStart:'',done:boolMap(p.done,DAYS.flatMap(d=>d.events.map(x=>x.id))),packed:boolMap(p.packed,TRIP.packing.map((_,i)=>String(i))),confirmed:boolMap(p.confirmed,['o','ken',...TRIP.hotels.map(h=>'hotel-'+h.id)])};save();render();toast('个人进度已导入，仅保存在本机。');}catch{toast('不是有效的本手册进度备份，未更改当前数据。');}}});
+document.addEventListener('input',e=>{if(e.target.classList.contains('search')){query=e.target.value;$('#timeline').innerHTML=timeline();}});
+document.addEventListener('click',e=>{if(e.target.closest('#print'))printAll();});window.addEventListener('hashchange',route);
+function boot(){route();setInterval(()=>{if(view==='overview'){const el=$('.live-strip');if(el)el.outerHTML=liveStrip();}if(view==='daily'){const d=DAYS[day],t=now();document.querySelectorAll('.event').forEach(n=>{const e=d.events.find(e=>e.id===n.id);if(!e)return;const is=t>=stamp(d,e)&&t<stamp(d,e,true);n.classList.toggle('current',is);const s=n.querySelector('.status-now');if(!is)s?.remove();else if(!s)n.querySelector('.event-time').insertAdjacentHTML('beforeend','<b class="status-now">计划此刻</b>');});}},30000);if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
