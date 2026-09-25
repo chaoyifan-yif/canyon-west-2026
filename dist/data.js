@@ -1,6 +1,6 @@
 /* Public itinerary only. Confirmation numbers, door codes and exact private Airbnb address stay on device. */
 const TRIP = {
-  verified: '2026-09-20', start: '2026-10-02', end: '2026-10-07',
+  verified: '2026-09-25', start: '2026-10-02', end: '2026-10-07',
   sources: {
     spring: ['SpringHill 官方 · 地址、早餐', 'https://www.marriott.com/en-us/hotels/laspr-springhill-suites-las-vegas-convention-center/overview/'],
     springFood: ['SpringHill 官方 · 餐饮时间', 'https://www.marriott.com/en-us/hotels/laspr-springhill-suites-las-vegas-convention-center/dining/'],

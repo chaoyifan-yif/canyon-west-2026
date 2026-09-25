@@ -1,0 +1,22 @@
+[Unit]
+Description=Private state API for Southwest travel guide
+After=network.target mysql.service
+Requires=mysql.service
+
+[Service]
+Type=simple
+User=canyon-guide
+Group=canyon-guide
+EnvironmentFile=/etc/canyon-guide.env
+WorkingDirectory=/opt/canyon-guide
+ExecStart=/usr/bin/python3 /opt/canyon-guide/guide-api.py
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log
+
+[Install]
+WantedBy=multi-user.target
