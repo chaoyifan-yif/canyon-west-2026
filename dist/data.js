@@ -14,6 +14,12 @@ const TRIP = {
     eataly: ['Eataly Las Vegas 官方', 'https://www.eataly.com/us_en/stores/las-vegas'],
     noodles: ['Bellagio Noodles 官方', 'https://bellagio.mgmresorts.com/en/restaurants/noodles.html'],
     show: ['O 秀官方 · 场次与门票', 'https://bellagio.mgmresorts.com/en/entertainment/o-by-cirque-du-soleil.html'],
+    showArrival: ['Cirque du Soleil · O 秀到场建议', 'https://www.cirquedusoleil.com/o/buy-tickets'],
+    fremont: ['Fremont Street Experience · Viva Vision', 'https://vegasexperience.com/calendar/viva-vision-11/'],
+    evel: ['Evel Pie · 地址与营业时间', 'https://www.evelpie.com/location/evel-pie/'],
+    aspen: ['Discover Flagstaff · Aspen Corner 赏秋路线', 'https://www.flagstaffarizona.org/blog/leaf-peeping-flagstaff-style/'],
+    leaf: ['Discover Flagstaff · 2026 叶色与道路更新', 'https://www.flagstaffarizona.org/plan-your-trip/leafometer/'],
+    sunsetRoad: ['NPS · Sunset Crater 2026 秋季道路封闭', 'https://www.nps.gov/sucr/learn/news/2026-08-24-fs-545-road-closure.htm'],
     zion: ['NPS · Canyon Overlook', 'https://www.nps.gov/thingstodo/hike-canyon-overlook.htm'],
     zionStatus: ['NPS · Zion 最新路况', 'https://www.nps.gov/zion/planyourvisit/conditions.htm'],
     bryce: ['NPS · Queen’s Garden / Navajo 环线', 'https://www.nps.gov/brca/planyourvisit/qgnavajocombo.htm'],
@@ -42,12 +48,13 @@ const TRIP = {
     ['保留与删除','保留 Zion 短徒步、Bryce 日落+次晨环线、下羚羊谷、马蹄湾、南缘日落、Route 66。默认不加纪念碑谷、火焰谷、Hoover Dam 或 Oatman，避免最后一天绕路。'],
     ['大峡谷玩法调整','旧版 Ooh Aah 下峡谷徒步改为东线观景点 + Rim Trail + Yavapai 日落，给当天去 Flagstaff 留出体力；不默默叠加两套玩法。Lipan Point 官方公告在旅行期间封闭，已移除。'],
     ['时间是执行建议，不是保证','驾车时长包含的休息会单独写明；停车、排队、天气可能改变计划。页面按计划时钟提示“此刻 / 下一站”，不读取GPS、不监控交通，也不会自动确认预约。'],
-    ['两张票需要订单确认','旧网页的拟定场次是 10/3 21:00 O 秀、10/5 16:00 Ken’s。当前沿用并醒目标注待确认。若订单不是这两个时间，需整体调整相关时间轴。'],
-    ['起降与租车','10/2 18:50 抵达沿用原行程，需以机票核对。10/7 19:50 起飞来自你最新明确说明。Hertz 10/4 09:30 取车来自截图；10/7 目标17:45还车不是合同截止。']
+    ['O 秀已订，Ken’s 仍核对','你已明确确认 10/3 21:00 的 Bellagio O 秀预订，因此周六晚餐与入场以此为硬约束。Ken’s 10/5 16:00 仍请与电子票核对；网页不会保存订单号。'],
+    ['起降与租车','10/2 18:50 抵达沿用原行程，需以机票核对。10/7 19:50 起飞来自你最新明确说明。Hertz 10/4 09:30 取车来自截图；10/7 目标17:00–17:30还车不是合同截止。']
   ]
 };
 const P = {
  spring: TRIP.hotels[0].address, airbnb:'Hatch Utah', home2:TRIP.hotels[2].address, fairfield:TRIP.hotels[3].address,
+ fremont:'Fremont Street Experience 425 Fremont Street Las Vegas NV 89101',evel:'Evel Pie 508 Fremont Street Las Vegas NV 89101',aspen:'Aspen Corner Snowbowl Road Flagstaff Arizona',peakview:'Peak View Overlook US 180 Flagstaff Arizona',
  rail:'Las Vegas Convention Center Monorail Station', harrahs:'Harrahs The LINQ Monorail Station', paris:'Horseshoe Paris Monorail Station', rental:'Hertz Harry Reid Airport Rent A Car Center 7135 Gilespie Street Las Vegas NV 89119',
  grandLux:'Grand Lux Cafe The Venetian 3355 Las Vegas Boulevard South Las Vegas', eataly:'Eataly Las Vegas Park MGM 3770 South Las Vegas Boulevard', noodles:'Noodles Bellagio Las Vegas', show:'O Theatre Bellagio Las Vegas',
  zion:'Canyon Overlook Trailhead Zion National Park', sunset:'Sunset Point Parking Bryce Canyon National Park', sunrise:'Sunrise Point Parking Bryce Canyon National Park', ruby:'Cowboys Buffet Steak Room Rubys Inn 26 South Main Street Bryce Canyon City',
@@ -57,31 +64,31 @@ const P = {
 };
 const ev=(start,end,type,title,summary,place='',steps=[],extra={})=>({start,end,type,title,summary,place,steps,...extra});
 const DAYS = [
- {date:'2026-10-02',short:'10.02',weekday:'星期五',name:'抵达霓虹',route:'湾区 → Las Vegas',theme:'city',zone:'America/Los_Angeles',zoneLabel:'PDT · UTC−7',stay:'spring',wake:'按航班安排',drive:'机场 Uber + Monorail',walk:'约2–4 km · 随体力',tag:'轻松抵达',intro:'今晚不拿车、不赶景点。先把行李放下，吃一顿晚饭，再去看看霓虹。',alerts:['18:50 到达为原行程记录，请核对机票；下机时间不等于走出机场时间。','Monorail 24小时票从第一次进闸开始计时，不是按自然日。'],fallback:'航班晚点或21:00后才入住：直接酒店 Palettes / 就近吃饭，跳过第一晚的长街；不要为用票强行出门。',events:[
+ {date:'2026-10-02',short:'10.02',weekday:'星期五',name:'先逛老城霓虹',route:'湾区 → Las Vegas → Fremont Street',theme:'city',zone:'America/Los_Angeles',zoneLabel:'PDT · UTC−7',stay:'spring',wake:'按航班安排',drive:'机场 Uber + Downtown 往返 Uber',walk:'约1–2 km · 随体力',tag:'轻松抵达',intro:'周六有完整 Strip 和已订的 O 秀，第一晚改去 Downtown 的 Fremont Street。看霓虹天幕、吃点东西、拍几张街景，不赶付费景点。',alerts:['10/3 21:00 的 O 秀已预订；周五不必抢先把 Strip 走一遍。','18:50 到达为原行程记录，请核对机票；下机时间不等于走出机场时间。','周五不启用 Monorail 票；Downtown 不能坐 Monorail 直达，往返用 Uber。'],fallback:'航班晚点或21:15后才入住：就近晚餐并休息，取消 Downtown；不要为了灯光秀牺牲周六体力。',events:[
   ev('18:50','19:35','flight','抵达 Harry Reid Airport','下机、洗手补水，跟随 Ride App Pickup 标识。','Harry Reid International Airport', ['不要去租车中心，周日才取车。','先看你所在航站楼的叫车楼层，再下单；留意车牌。'],{status:'航班到达待核对'}),
   ev('19:35','20:10','drive','Uber → SpringHill','规划车程约20–30分钟，加候车余量。','spring',['目的地核对2989 Paradise Road，不是其他 SpringHill 分店。']),
-  ev('20:10','20:35','stay','入住，放行李','简单检查房间，准备手机票与轻便外套。','spring',['前台确认周末早餐时间。','今晚无车，无需为停车付费。']),
-  ev('20:35','21:15','transit','步行到车站 → Harrah’s / The LINQ','先走到 Convention Center 站，再南向乘车。','rail',['步行规划15–20分钟；不要把列车时间当成门到门时间。','第一次刷24小时票后，记录激活时间。','Harrah’s/The LINQ 下车，经酒店步行去 Venetian。'],{source:'rail'}),
-  ev('21:15','22:10','food','Grand Lux Café 晚餐','Venetian 店，给晚到的一天留弹性。','grandLux',['美式餐厅，饭量较大，可两人分着点。','官网标注24小时；到店排队太长就选外带或就近简餐。','预算参考两人 $55–85，含税及约18%–20%堂食小费；不是菜单报价。'],{source:'grandLux'}),
-  ev('22:10','22:40','see','Venetian 运河 / Strip 夜景','赌场公共区域和运河走一小圈即可。','Grand Canal Shoppes The Venetian Las Vegas',['不用住赌场酒店也能看公共区、室内运河和建筑。','Sphere 外观只作为有余力选项，不安排内部演出。'],{optional:true,mode:'walking'}),
-  ev('22:40','23:20','transit','Monorail 返回酒店','Harrah’s/The LINQ → Convention Center，步行回酒店。','harrahs',['周五列车官方运营至次日03:00；不是酒店接驳车。','疲惫时直接 Uber 回酒店；暗处不抄近路。'],{source:'railHours'}),
-  ev('23:20','23:40','rest','洗漱休息','明天不必赶日出，把体力留给 Strip 和 O 秀。')
+  ev('20:10','20:35','stay','入住，放行李','简单检查房间、喝水，轻装去 Downtown。','spring',['前台确认周末早餐时间。','今晚无车，无需为停车付费。']),
+  ev('20:35','21:00','drive','Uber → Fremont Street','直接到 Fremont Street Experience 东段；Monorail 不到 Downtown。','fremont',['司机在合法上下客点放人，不在人流中央下车。','若酒店入住太晚，直接取消这一段。'],{source:'fremont',origin:'spring'}),
+  ev('21:00','21:45','food','Downtown 晚餐','先吃点热的，再轻松看灯光与街景。','evel',['Evel Pie 在 Fremont 街东段，周五官网营业到凌晨；也可在下方候选中换店。','两人餐费估算 $35–60，具体税和小费按下单方式。'],{source:'evel'}),
+  ev('21:45','22:45','see','Fremont Street · Viva Vision','霓虹招牌和天幕，通常整点有免费灯光秀；以当晚节目为准。','fremont',['先在天幕下找安全位置，22:00 看一轮；再拍赌场外立面与街头霓虹。','这里人多且很吵，护好手机和钱包；不计划进入赌场消费。','无需预订 Neon Museum；普通门票的相机与三脚架规则不同，不把它临时塞进来。'],{source:'fremont',mode:'walking'}),
+  ev('22:45','23:10','drive','Uber 返回 SpringHill','在明亮的正式上车点叫车，不抄暗巷步行。','spring',['明天才开始 Monorail 一日票，晚上 O 秀后仍可使用。'],{origin:'fremont'}),
+  ev('23:10','23:30','rest','洗漱休息','周六上午开始 Strip，21:00 的 O 秀已经订好。')
  ]},
- {date:'2026-10-03',short:'10.03',weekday:'星期六',name:'长街与水上舞台',route:'Las Vegas Strip',theme:'city',zone:'America/Los_Angeles',zoneLabel:'PDT · UTC−7',stay:'spring',wake:'08:00',drive:'Monorail + 步行 / 短程 Uber',walk:'约6–10 km · 可删减',tag:'城市一整天',intro:'欢迎牌、街景、温室、喷泉，然后把夜晚留给 O。下午回房歇一次，不把度假走成拉练。',alerts:['O 秀暂按旧计划 21:00，尚未用订单确认；若场次不同，晚餐及入场时间要一起改。','24小时 Monorail 票若周五20:50激活，周六20:50失效；演出后回程通常需另买单程。'],fallback:'太热或走累：取消欢迎牌与部分商场，保留 Bellagio + O 秀。下午休息优先于第二次去 Venetian。',events:[
+ {date:'2026-10-03',short:'10.03',weekday:'星期六',name:'长街与水上舞台',route:'Las Vegas Strip · 21:00 Bellagio O',theme:'city',zone:'America/Los_Angeles',zoneLabel:'PDT · UTC−7',stay:'spring',wake:'08:00',drive:'Monorail + 步行 / 短程 Uber',walk:'约6–10 km · 可删减',tag:'21:00 O 秀已预订',intro:'欢迎牌、街景、温室、喷泉，然后按已订场次在 Bellagio 看 O。下午回房歇一次，不把度假走成拉练。',alerts:['已预订：10/3 21:00 Bellagio O 秀。建议20:20左右到剧院，提前准备两人电子票与座位号。','Monorail 24小时票周六上午首次进闸时激活，覆盖当晚演出后的回程；周五不买。'],fallback:'太热或走累：取消欢迎牌与部分商场，保留 Bellagio + 21:00 O 秀。下午休息优先于加走另一家酒店。',events:[
   ev('08:00','08:30','rest','起床，轻装出门','带证件、票、充电宝、防晒；贵重物品妥善存放。'),
   ev('08:30','09:10','food','酒店免费早餐','周末早餐官方07:00–09:30。','spring',['Mon Ami Gabi 仍可作为自费替代，但不是再吃一顿。'],{source:'springFood'}),
-  ev('09:10','10:00','transit','Monorail 南向 → MGM Grand','酒店步行至车站，坐到南端，穿酒店出站。','rail',['导航到车站而不是 Convention Center 展馆入口。','南端出站后先上洗手间，再叫车去欢迎牌。']),
+  ev('09:10','10:00','transit','首次刷24小时票 · Monorail 南向','步行至 Convention Center 站，坐到 MGM Grand，穿酒店出站。','rail',['导航到车站而不是 Convention Center 展馆入口。','记下首次进闸时间；有效期从这一刻开始。','南端出站后先上洗手间，再叫车去欢迎牌。'],{source:'rail'}),
   ev('10:00','11:15','see','Welcome to Fabulous Las Vegas Sign','打车去拍照，再打车到 New York-New York。','Welcome to Fabulous Las Vegas Sign',['这里离中段Strip较远，不建议从 Bellagio 徒步过去。','正面拍照队太长时拍侧面即可；总停留20–30分钟。'],{optional:true}),
   ev('11:15','12:00','see','New York-New York → Park MGM','看建筑外观，随后步行去午餐。','New York New York Hotel Las Vegas',['沿游客步道和天桥走；不横穿多车道。'],{mode:'walking'}),
   ev('12:00','13:00','food','Eataly 午餐','在 Park MGM 室内吃饭、补水，给脚放个假。','eataly',['选披萨、意面或柜台简餐，按口味选，不强求打卡套餐。','两人规划 $45–70 含税；堂食服务小费按实际模式。'],{source:'eataly',mode:'walking'}),
   ev('13:00','15:00','see','Bellagio 温室 → 喷泉 → Caesars','公共区慢逛，喷泉以当天公告为准。','Bellagio Conservatory Botanical Gardens',['从 Park MGM 沿步道或免费 Aria Express 接近 Bellagio；它不是付费 Monorail。','温室约30分钟；喷泉看一场；Forum Shops 逛30–45分钟。','不要在一个酒店里来回绕，室内也很大。'],{mode:'walking'}),
   ev('15:00','15:45','transit','回 SpringHill','就近到 Monorail 车站北向返回；走累可 Uber。','spring'),
   ev('15:45','17:15','rest','房间休息 / 洗澡','充电、喝水，检查 O 秀电子票。','spring'),
-  ev('17:15','18:15','transit','回到 Bellagio','Monorail 到 Horseshoe/Paris，再步行至 Bellagio。','paris',['出站到 Bellagio 仍需走路，整段给45–60分钟。','不再插入一趟 Venetian，昨晚已经有安排。']),
+  ev('17:15','18:15','transit','回到 Bellagio','Monorail 到 Horseshoe/Paris，再步行至 Bellagio。','paris',['出站到 Bellagio 仍需走路，整段给45–60分钟。','不再临时加远处酒店，把演出前缓冲留足。']),
   ev('18:15','19:30','food','Noodles at Bellagio 晚餐','就在看秀的酒店吃，减少横穿长街。','noodles',['先看等位时间；排队超过30分钟就改 Bellagio 内简餐。','两人规划 $60–95 含税及堂食小费。','吃完可以再看温室或喷泉，20:25开始往剧院走。'],{source:'noodles',mode:'walking'}),
-  ev('20:25','21:00','ticket','找 O Theatre、洗手间、入场','目标20:30–20:40到剧院；这是舒适余量，不是杜撰的停入场规则。','show',['票券和座位号提前截图。','以票上入场要求为准，演出中迟到安排由剧院决定。'],{source:'show',ticket:'o',mode:'walking'}),
-  ev('21:00','22:30','ticket','O by Cirque du Soleil','约90分钟；拟定场次，待订单核对。','show',[],{source:'show',ticket:'o'}),
-  ev('22:30','23:30','transit','回 SpringHill，整理明天行李','步行至 Horseshoe/Paris 站，买单程北返，或直接 Uber。','paris',['Monorail 到 Convention Center 后还要步行。','今晚整理完，明早早餐后直接退房去取车。'])
+  ev('20:15','21:00','ticket','已订 O 秀 · 到剧院、洗手间、入场','目标20:20左右到剧院，官方建议提前约40分钟；以你的票面入场说明为准。','show',['提前保存两人电子票与座位号截图。','演出中迟到安排由剧院决定，不用卡最后一分钟。'],{source:'showArrival',ticket:'o',mode:'walking',status:'已预订 21:00'}),
+  ev('21:00','22:30','ticket','O by Cirque du Soleil · 已预订','已确认预订 21:00 场；官方演出约90分钟、无中场休息。','show',[],{source:'showArrival',ticket:'o',status:'已预订'}),
+  ev('22:30','23:30','transit','回 SpringHill，整理明天行李','Monorail 一日票仍在有效期可北返，或直接 Uber。','paris',['Monorail 到 Convention Center 后还要步行。','今晚整理完，明早早餐后直接退房去取车。'])
  ]},
  {date:'2026-10-04',short:'10.04',weekday:'星期日',name:'走入巨壁与石柱',route:'Las Vegas → Zion → Bryce → Hatch',theme:'bryce',zone:'America/Denver',zoneLabel:'抵达 Utah 后 MDT · UTC−6',stay:'airbnb',wake:'07:00 PDT',drive:'约5.5–6.5小时 · 含短休规划',walk:'Zion 1.6 km + Bryce 轻走',tag:'全程最紧的一天',intro:'Zion 只走 Canyon Overlook，不进主峡谷摆渡车线。日落前到 Bryce 看石柱，吃完晚饭再去 Hatch。',alerts:['10:00 Vegas 出发，开约3小时后到 Utah，钟表已是14:00，不是13:00。','Canyon Overlook 停车很少；只停合法车位。15:30后才开始找车位就放弃步道，把时间留给 Bryce。','Hatch Airbnb 精确门牌、停车与晚到入住指引需要订单确认。'],fallback:'取车延误：先删欢迎式停靠和正餐，保留路上简餐。若 Zion 停车失败或步道关闭，沿 UT-9 合法观景后继续 Bryce；不要为了两个日落而超速。',events:[
   ev('07:00','07:15','rest','起床，收好行李','今天穿运动鞋，外套放随手可拿的位置。','',[],{zone:'America/Los_Angeles'}),
@@ -132,28 +139,26 @@ const DAYS = [
   ev('20:20','20:40','stay','Fairfield East 入住','放好行李、简单检查房间；停车费不一定含在房价里。','fairfield',['前台确认明早06:30–09:00早餐和车牌登记。']),
   ev('20:40','21:00','drive','开去 Flagstaff Downtown','约15–20分钟，找合法停车位。','lumber',['驾驶员不喝酒；若想喝，往返用Uber。'],{origin:'fairfield'}),
   ev('21:00','21:45','food','Lumberyard 晚餐 · 需核对厨房末单','官网周二营业到22:00，不等于厨房一定接单到22:00。','lumber',['下午休息时电话确认21点是否仍能点餐。','若无法晚餐，回程提前找Tusayan简餐 / 外带，不能空着肚子赌营业时间。','两人规划 $50–80 含税及堂食小费。'],{source:'lumber',status:'末单时间待确认'}),
-  ev('21:45','22:10','see','Downtown 短逛','San Francisco St / Heritage Square 一带，看小镇夜景。','Heritage Square Flagstaff',['店铺是否营业不保证；沿有灯有人区域走，不跨铁路。','疲劳就取消，不必为了“晚上有事做”熬夜。'],{optional:true,mode:'walking'}),
-  ev('22:10','22:30','drive','返回酒店','明天还有回Vegas的长途，把睡眠留够。','fairfield')
+  ev('21:45','22:10','see','Downtown 短逛 · 或去拍星','San Francisco St / Heritage Square 夜景；若改去 Peak View 拍星，则不逛市中心。','Heritage Square Flagstaff',['街区夜逛和 16mm 星野二选一，拍星详细路线见本日下方观星卡。','店铺是否营业不保证；疲劳就直接回酒店。'],{optional:true,mode:'walking'}),
+  ev('22:10','22:30','drive','返回酒店 · 拍星则更晚','若选 Downtown 夜逛，此时回酒店；拍星则预计约23:20回，次日应评估是否缩短白杨停留。','fairfield')
  ]},
- {date:'2026-10-07',short:'10.07',weekday:'星期三',name:'沿着 66 号公路回家',route:'Flagstaff → Williams → Seligman → Kingman → LAS',theme:'road',zone:'America/Phoenix',zoneLabel:'Arizona 与 Vegas 当天同为 UTC−7',stay:null,wake:'07:15',drive:'约5–5.5小时 · 含老66路段',walk:'小镇轻松散步',tag:'19:50 飞回湾区',intro:'铁路小镇、老车和路牌。把回程变成旅行的最后一章，但留出加油、还车、接驳和安检时间。',alerts:['目标17:45到Hertz租车中心；不是19:50起飞前直接18:30才去还车。','17:45是建议余量，不是航司规定。若要托运行李或导航拥堵，应更早到；提前到就直接还车，不刻意等点。','Hackberry 和 Kingman 可删。当天不加纪念碑谷、Oatman、火焰谷或坝内参观。'],fallback:'Seligman出发已超过12:30：跳过Hackberry走I-40。Kingman出发超过15:00：取消后续游览直奔还车；导航预计17:45后到则不要再加任何停靠。',events:[
-  ev('07:15','07:30','rest','起床，收好返程行李','机票、驾照、信用卡不要塞进后备箱深处。'),
-  ev('07:30','08:00','food','Fairfield 免费早餐','工作日06:30–09:00；吃完查路况与航班航站楼。','fairfield',{},{source:'fairfield'}),
-  ev('08:00','08:15','stay','退房，检查房间与车内','确认没有遗留充电器，备好路上的水。','fairfield'),
-  ev('08:15','09:10','drive','Flagstaff East → Williams','规划约50–55分钟，不是两个镇固定要一小时。','williams',['走I-40向西。这里是先前决定不住宿、但仍值得短逛的小镇。'],{origin:'fairfield'}),
-  ev('09:10','09:55','see','Williams 老街散步','先以Visitor Center附近为定位，找合法车位。','williams',['沿Historic Route 66主街看看霓虹招牌、礼品店和铁路小镇外观。','咖啡按需要买，不另外安排一顿大早午餐。','不乘Grand Canyon Railway，不占用整天。']),
-  ev('09:55','10:45','drive','Williams → Seligman','I-40向西，约45–50分钟。','seligman',[],{origin:'williams'}),
-  ev('10:45','11:30','see','Seligman 路牌与老车','Historic Seligman Sundries、主街店铺外观慢慢看。','seligman',['沿66号公路主街步行，拍照不站在车道。','店铺营业有变动，外观打卡不依赖全部开门。']),
-  ev('11:30','12:15','food','Westside Lilo’s Café 午餐','保留原来选的66号公路公路餐厅。','lilo',['两人规划 $40–65 含税及堂食小费；出发前确认营业。','排队久改外带 / 附近营业简餐，不为一顿午餐挤掉返程余量。'],{source:'lilo',status:'当天营业需复核'}),
-  ev('12:15','13:30','drive','走历史 Route 66 → Hackberry','经Peach Springs一段，规划约75分钟。','hack',['此段选AZ-66，不是全程跟最快路线回I-40。','若晚出发、困倦或路况差，直接I-40去Kingman，跳过Hackberry。'],{origin:'lilo',optional:true}),
-  ev('13:30','13:50','see','Hackberry General Store 外观','老加油站、老车、公路感，20分钟即可。','hack',['店内开放与否不保证；不因关门耽误返程。'],{optional:true}),
-  ev('13:50','14:30','drive','Hackberry → Kingman','继续AZ-66，约35–40分钟。','kingman',[],{origin:'hack'}),
-  ev('14:30','15:00','see','Kingman 短休与洗手间','Powerhouse / Route66街景，只作30分钟休息。','kingman',['默认不进博物馆，不把一个小时展览再塞进来。','15:00目标离开；晚了就不进镇，直奔Vegas。'],{optional:true}),
-  ev('15:00','17:15','drive','Kingman → Las Vegas 加油区','US-93 / I-11北行，规划2小时15分钟含短休。','rental',['经过坝附近不等于要下高速参观；这版不去Hoover Dam。','用实时Google路线确认到达；抵达机场周边先找加油站。'],{origin:'kingman'}),
-  ev('17:15','17:45','car','加油 → Hertz 还车','按合同油量归还，预留半小时加油、检查、还车。','rental',['保留加油收据，拍车身、油表与里程。','带走手机、墨镜和充电线；保存还车凭证。','地图搜索机场租车中心附近加油站，价格和营业以现场为准。']),
-  ev('17:45','18:20','transit','租车中心接驳 → 航站楼','先按航司确定Terminal 1或3，坐对应接驳。','Harry Reid International Airport',['Hertz还车中心不在航站楼内，不能省略接驳。','这是规划时段，排队与道路情况会改变实际时间。'],{source:'airport'}),
-  ev('18:20','19:15','flight','安检、找登机口、简餐','以航空公司规定的行李与登机截止为准。','Harry Reid International Airport',['有托运行李应前移还车时间，不能照此最低节奏硬套。','安检后先定位登机口，再就近买晚餐；预算两人 $30–50。','留意登机广播，不把19:50起飞当成19:50到登机口。']),
-  ev('19:15','19:50','flight','候机 / 登机','具体登机时间以机票和App为准。',''),
-  ev('19:50','19:50','flight','飞回湾区','19:50起飞已按你最新说明更新；到达时间以机票为准。','', [],{openEnd:true})
+ {date:'2026-10-07',short:'10.07',weekday:'星期三',name:'金色白杨与 66 号公路',route:'Flagstaff → Aspen Corner → Seligman → Kingman → LAS',theme:'road',zone:'America/Phoenix',zoneLabel:'Arizona 与 Vegas 当天同为 UTC−7',stay:null,wake:'06:45',drive:'约5–6小时 · 不含赏秋与吃饭',walk:'白杨短走 + 老街短逛',tag:'19:50 飞回湾区',intro:'早上借 Flagstaff 的高海拔看一眼白杨秋色，然后经 Seligman 的老66街区返程。原来 Williams、Hackberry 的多站停靠改为可删选项，不跟航班抢时间。',alerts:['有 Seligman 停留时，最迟10:00必须离开 Flagstaff / Aspen Corner 区域往西；这是行程硬截止，不是还车合同时间。','若10:00仍没动身，只走 I-40 / US-93 直达 Hertz，取消小镇游览；若有托运行李，所有截止点再提前。','目标17:00–17:30到 Hertz，留租车接驳与安检余量。10/7 不加纪念碑谷、Oatman、火焰谷或 Hoover Dam。','10月7日白杨是否正黄看临行的 Leaf-o-Meter；Lockett Meadow 目前因施工关闭，不把它当备选。'],fallback:'白杨不黄或 Snowbowl Road 天气差：在 Flagstaff Downtown / Route 66 街区走30–40分钟，再从 I-40 西行。Seligman 出发晚于12:15就取消 Kingman 停留；导航预计17:30后到 Hertz，立即取消所有停靠。',events:[
+  ev('06:45','07:00','rest','起床，收好返程行李','机票、驾照、信用卡不要塞进后备箱深处。'),
+  ev('07:00','07:30','food','Fairfield 免费早餐','工作日早餐官方06:30–09:00；查天气、I-40 路况与航班航站楼。','fairfield',[],{source:'fairfield'}),
+  ev('07:30','07:45','stay','退房，检查车内','补水、带外套。若有托运行李，提前出发。','fairfield'),
+  ev('07:45','08:25','drive','Flagstaff East → Aspen Corner','走 US-180 接铺装 Snowbowl Road；只在标示停车区停车。','aspen',['山路与秋季车流会让时间波动；天气差则改市中心短逛。','不要把导航导到 Lockett Meadow，它正因施工关闭。'],{source:'aspen',origin:'fairfield'}),
+  ev('08:25','09:10','see','Aspen Corner 白杨短走 / 拍照','若已转黄，这里比市区更适合拍秋色；无需走完整徒步。','aspen',['只在正式 Aspen Corner 停车区留车；停满就继续，不停路肩。','拍树冠、林间路与两人合照，步行控制在20–30分钟。','叶色每年变化，出发前看 Flagstaff Leaf-o-Meter；若未黄就直接缩短。'],{source:'leaf'}),
+  ev('09:10','11:00','drive','Aspen Corner → Seligman','下 Snowbowl Road，接 I-40 西行；实际用时以出发前地图为准。','seligman',['这是今天正式返程起点；10:00 仍未离开 Flagstaff 区域就取消 Seligman。','Williams 只从高速经过，默认不再下车。'],{origin:'aspen'}),
+  ev('11:00','11:30','see','Seligman 老66街景','Historic Seligman Sundries 一带拍路牌、老车和外观。','seligman',['短逛约30分钟，不走历史66号公路全段。','店铺营业会变，拍外观不依赖开门。']),
+  ev('11:30','12:10','food','Seligman 午餐','Westside Lilo’s 有位就吃；等位过长改外带。','lilo',['两人规划 $40–65 含税与堂食小费，出发前确认营业。','最迟12:15继续上路，航班优先。'],{source:'lilo',status:'营业与等位临行核对'}),
+  ev('12:10','13:30','drive','Seligman → Kingman · I-40','今天用较快的州际公路，不绕 Peach Springs / Hackberry。','kingman',['想体验66号公路长段，可在另一次没有晚班飞机的旅行安排。','若出发晚于12:15，Kingman 只作加油或洗手间短休。'],{origin:'lilo'}),
+  ev('13:30','13:50','see','Kingman 短休','有余量才看 Powerhouse 外观或 Route 66 路牌。','kingman',['14:00前离开为佳；导航显示到 Hertz 晚于17:30就不停。'],{optional:true}),
+  ev('13:50','16:30','drive','Kingman → Las Vegas 租车中心周边','经 US-93 / I-11 北行，时间含部分交通波动。','rental',['经过坝附近不代表下高速参观；按地图到达时间实时删减。','困倦就合法停车休息，绝不为计划超速。'],{origin:'kingman'}),
+  ev('16:30','17:20','car','加油 → Hertz 还车','按合同油量还车，拍车况、油表、里程并保留凭证。','rental',['机场附近加油站先查当日营业，不把加油留到最后几分钟。','目标17:00–17:30完成，不要卡18:30。']),
+  ev('17:20','18:00','transit','租车中心接驳 → 航站楼','看航司是 Terminal 1 还是 3，乘对应接驳。','Harry Reid International Airport',['Hertz 不在航站楼内，还需等接驳车。'],{source:'airport'}),
+  ev('18:00','19:10','flight','安检、登机口与简餐','先确认登机口；有托运行李应比这个时间轴更早到。','Harry Reid International Airport',['餐饮只选登机口附近，或提前在路上买外带。','以航司截止时间为准，不把19:50起飞当作19:50到登机口。']),
+  ev('19:10','19:50','flight','候机 / 登机','以登机牌通知为准。'),
+  ev('19:50','19:50','flight','飞回湾区','航班19:50起飞；到达时间以机票为准。','',[],{openEnd:true})
  ]}
 ];
 // Normalize optional detail lists and assign stable keys; times are local to the explicit zone.

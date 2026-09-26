@@ -28,4 +28,6 @@ py -m http.server 4173 --directory dist
 
 `server/guide-api.py` 是仅监听 `127.0.0.1:8765` 的最小 HTTP API。Nginx 在 HTTPS 下把 `/travel/us-west-lasvegas/api/` 反向代理到该服务。MySQL 结构在 `server/schema.sql`；`server/setup-server.py` 为服务器首次初始化生成独立数据库用户和旅途登录密码。密码只写在服务器的 `/etc/canyon-guide.env` 与 root 私有的 `/root/canyon-guide-access.txt`，绝不提交到 Git。`server/canyon-guide.service` 提供 systemd 托管，`server/patch-nginx.py` 只在既有配置的旅行路径插入 API 代理，不改游戏服务。
 
+需要更换旅途密码时，以 root 身份运行 `server/rotate-access-password.py`，从标准输入传入新密码，随后重启 `canyon-guide` 服务。脚本保留原环境文件的 root-only 备份、刷新 scrypt 哈希并撤销旧会话；不会清空 MySQL 中的行程记录。密码不要写入 Git、公开网页、命令行参数或日志。
+
 个人状态仍会保留在本机，登录后与云端同步；冲突时不会覆盖其他设备的新版本。这个服务不接入银行账单，所有消费金额都由用户手填。不要在记录里填写门锁密码、卡号或证件号。退出时清除本机个人记录，服务器副本保留以供下次登录。服务器端需自己定期备份 MySQL。

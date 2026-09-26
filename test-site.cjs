@@ -10,11 +10,14 @@ const assert=require('node:assert/strict');
  assert.equal(await page.locator('.day-card').count(),6);
  const integrity=await page.evaluate(()=>DAYS.map(d=>({date:d.date,events:d.events.length,problems:d.events.flatMap((e,i)=>{const a=stamp(d,e),b=stamp(d,e,true);return [...(b<a?[e.title+': negative duration']:[]),...(i&&a<stamp(d,d.events[i-1],true)?[e.title+': overlap']:[])];})})));
  assert.deepEqual(integrity.flatMap(d=>d.problems),[]);
+ assert.equal(await page.evaluate(()=>DAYS[0].events.some(e=>e.title.includes('Fremont'))),true);
+ assert.equal(await page.evaluate(()=>DAYS[1].events.some(e=>e.start==='21:00'&&e.ticket==='o'&&e.status.includes('已预订'))),true);
+ assert.equal(await page.evaluate(()=>DAYS[5].events.some(e=>e.place==='aspen')),true);
  for(let i=0;i<6;i++){await page.goto('http://127.0.0.1:8787/#daily/'+i);await page.waitForSelector('.timeline');assert.ok(await page.locator('.event').count()>5);}
  await page.locator('[data-filter="food"]').click();assert.equal(await page.locator('.event').count(),2);
  await page.locator('[data-filter="all"]').click();await page.locator('.check').first().check();await page.reload();assert.equal(await page.locator('.check').first().isChecked(),true);
  await page.goto('http://127.0.0.1:8787/#kit');await page.locator('#private-address').fill('Test Private Address Hatch UT');await page.locator('#private-note').fill('<img src=x onerror=alert(1)>');await page.locator('[data-action="save-private"]').click();
- await page.locator('#rail-start').fill('2026-10-02T20:50');await page.locator('[data-action="save-private"]').click();assert.match(await page.locator('#rail-result').innerText(),/10\/03.*20:50/);
+ await page.locator('#rail-start').fill('2026-10-03T09:10');await page.locator('[data-action="save-private"]').click();assert.match(await page.locator('#rail-result').innerText(),/10\/04.*09:10/);
  await page.locator('#sim-day').selectOption('2');await page.locator('#sim-zone').selectOption('America/Denver');await page.locator('#sim-time').fill('14:40');await page.locator('[data-action="simulate"]').click();await page.waitForSelector('.event.current');assert.match(await page.locator('.event.current h3').innerText(),/Canyon Overlook/);
  await page.goto('http://127.0.0.1:8787/#stays');assert.equal(await page.locator('.hotel').count(),4);assert.ok((await page.locator('a[href*="maps/dir"]').all().then(async a=>Promise.all(a.map(n=>n.getAttribute('href'))))).some(u=>u.includes('Test%20Private')));
  await page.goto('http://127.0.0.1:8787/#kit');const downloadWait=page.waitForEvent('download');await page.locator('[data-action="offline"]').click();const dl=await downloadWait;await dl.saveAs('qa/offline.html');
