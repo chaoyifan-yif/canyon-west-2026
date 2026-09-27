@@ -1,6 +1,6 @@
 # Southwest guide v2 — editorial record
 
-Updated 2026-09-20. Rebuilt from both the original planning task (01a073c4-bff8-7920-901c-81b6a8ce8f5b) and the continued hotel-planning conversation (01a0b795-cf76-7090-ab03-4c45acfefb35), original static source, screenshots, and official live sources linked in data.js.
+Updated 2026-09-27. Rebuilt from the planning conversation, selected bookings, original static source and official sources linked in the site. The route atlas now uses self-hosted OSRM road geometry captured at build time; it is not live navigation.
 
 ## Latest decisions prevail
 
@@ -16,10 +16,10 @@ Updated 2026-09-20. Rebuilt from both the original planning task (01a073c4-bff8-
 
 - Zion Canyon Overlook only; no main canyon shuttle/Narrows/Angels Landing.
 - Bryce sunset Oct 4 and Queen's Garden/Navajo Two Bridges loop Oct 5. Hatch implies a return drive next morning; this is included.
-- Ken's Lower Antelope nominal 16:00 Oct 5 is an old plan, not proven purchased. Likewise O show Oct 3 21:00. UI labels both pending order confirmation.
-- Oct 6 Horseshoe Bend, east entrance/Desert View, east-to-west South Rim viewpoints, Yavapai sunset, Flagstaff. Ooh Aah hike removed from default as an explicit lower-effort revision to fit this late hotel change, not silently combined with all viewpoints.
+- Oct 3 Bellagio O show at 21:00 is user-confirmed as booked. Ken's Lower Antelope is planned for 16:00 Oct 5; verify against its electronic ticket.
+- Oct 6 Horseshoe Bend, east entrance/Desert View, east-to-west South Rim viewpoints, Flagstaff. A route watches sunset at Yavapai and drives south to Flagstaff. B route leaves Yavapai by 16:15, backtracks approximately 38 km to Desert View, watches sunset there and attempts low Galactic Core after astronomical twilight, then drives to Flagstaff. Both branches appear in the map and day timeline. Ooh Aah hike is not in either branch.
 - Lipan Point removed based on NPS June22–Dec23 2026 closure notice.
-- Oct 7 Williams + Seligman + optional historic AZ66/Hackberry/Kingman; no added Monument Valley, Hoover Dam, Valley of Fire or Oatman. Cut optional stops if delayed.
+- Oct 7 Aspen Corner if autumn colour and weather cooperate, then Seligman and optional Kingman short stop before LAS. Williams is a drive-through rather than a scheduled stop. No added Monument Valley, Hoover Dam, Valley of Fire or Oatman. Cut optional stops if delayed.
 - Old meal choices preserved where feasible: Grand Lux Venetian, Eataly, Bellagio Noodles, Ruby's, Big John's, Westside Lilo's. Added conditional late Flagstaff dinner at Lumberyard; published closing hour is NOT a verified kitchen-last-order time.
 
 ## Evidence boundaries
@@ -28,4 +28,4 @@ All start/end times except stated appointments/flights are proposed execution ti
 
 ## Privacy and deployment
 
-Keep existing public Site project appgprj_6aa94e1e19e0819198d002030df72102 and URL. LocalStorage stores private address, notes, confirmations, checks. No backend upload or third-party analytics. Exported personal backup contains private inputs and is explicitly labelled. Static offline HTML includes public itinerary only.
+The site is served from the Aliyun Nginx path `/travel/us-west-lasvegas/`. LocalStorage stores private address, notes, confirmations and checks; the optional password-protected cloud API syncs selected personal fields to the user's MySQL only after login. No passwords, confirmation numbers or private lodging addresses belong in the public Git repository. Exported personal backup contains private inputs and is explicitly labelled. Static offline HTML includes public itinerary and road atlas, not private inputs.

@@ -4,6 +4,10 @@
 
 公开行程是纯静态页面，`dist/` 可单独运行；餐厅选择、评价、花费、民宿地址等个人记录默认只在本机浏览器。部署于 `www.chaoyifan666.fun` 时，用户可用单独的旅途密码登录私有同步服务，把记录存入阿里云 MySQL。公开代码和页面不包含密码、订单号或民宿精确门牌。
 
+`#map` 是不依赖在线瓦片的自驾路线图：可按 10 月 4–7 日切换，逐段查看里程/规划时长并跳转 Google Maps。10 月 6 日有「Yavapai 日落后直达 Flagstaff」和「折返 Desert View 补拍银心」两条分支；选择会同步到当天时间轴与观星卡。地图线条是通过 `scripts/generate-route-geometry.py` 生成的 OSRM 路网快照，不含实时交通或封路；私人 Hatch 地址只在本机记录，公开地图标 Hatch 镇中心。
+
+本地回归测试：先在 `dist/` 启动静态服务器的 8787 端口，再运行 `node test-site.cjs`、`node test-features.cjs`、`node test-map.cjs`。
+
 ## 本地预览
 
 直接用任意静态文件服务器打开 `dist/`，例如：

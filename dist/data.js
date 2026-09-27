@@ -34,7 +34,10 @@ const TRIP = {
     sunset: ['大峡谷 2026年10月日落时刻', 'https://www.timeanddate.com/sun/@z-us-86023?month=10&year=2026'],
     lumber: ['Lumberyard 官方 · 地址、营业时间', 'https://lumberyardbrewingcompany.com/'],
     lilo: ['Westside Lilo’s 官网 · 出发前核对营业', 'https://www.westsidelilos.com/'],
-    passes: ['NPS · 2026 年卡及非居民费用 FAQ', 'https://www.nps.gov/aboutus/nonresident-fees.htm']
+    passes: ['NPS · 2026 年卡及非居民费用 FAQ', 'https://www.nps.gov/aboutus/nonresident-fees.htm'],
+    grandFees: ['NPS · 大峡谷入园不需预约', 'https://www.nps.gov/grca/planyourvisit/fees.htm'],
+    desertNight: ['NPS · Desert View 东门与室外开放', 'https://www.nps.gov/grca/planyourvisit/desert-view.htm'],
+    bryceFees: ['NPS · Bryce 入园与预约', 'https://www.nps.gov/brca/planyourvisit/permitsandreservations.htm']
   },
   hotels: [
     {id:'spring',nights:'10.02 — 10.04 · 连住两晚',name:'SpringHill Suites',full:'SpringHill Suites by Marriott Las Vegas Convention Center',city:'LAS VEGAS, NV',address:'2989 Paradise Road, Las Vegas, NV 89109',phone:'+17024335880',check:'入住 16:00 / 退房 12:00',breakfast:'免费早餐；周六、周日 07:00–09:30',parking:'官方停车 $25/晚；这两晚不取车，通常不产生此项',note:'去 Strip 用 Monorail + 步行。酒店不是车站内，预留走到 Convention Center 站约15–20分钟，再加等车和出站穿酒店的时间。',source:'spring',cost:'此前截图约 $404 / 两晚含税；不等于订单实付。'},
@@ -122,7 +125,7 @@ const DAYS = [
   ev('18:25','19:45','food','Big John’s Texas BBQ','烤肉、现场音乐，作为今晚的小镇体验。','john',['官网11:00–21:00，先到先得；当前标注18:30起现场音乐。','两人规划 $50–80 含税及堂食小费；可选拼盘分享。','排队长则外带，不影响明早马蹄湾。'],{source:'john'}),
   ev('19:45','21:30','rest','补给、回酒店休息','买第二天简餐与水，睡前确认大峡谷道路公告。','home2')
  ]},
- {date:'2026-10-06',short:'10.06',weekday:'星期二',name:'河湾与地球的剖面',route:'Page → Grand Canyon South Rim → Flagstaff',theme:'grand',zone:'America/Phoenix',zoneLabel:'全天 MST · UTC−7',stay:'fairfield',wake:'07:30',drive:'约5小时 · 含园内移动',walk:'约5–7 km · 以平缓观景为主',tag:'南缘日落 · 小镇晚餐',intro:'从东门进入南缘，一路由东向西看。今天不下到 Ooh Aah；把日落留给 Yavapai，晚上去 Flagstaff。',alerts:['南缘不是西峡谷玻璃桥！导航先设 Desert View Watchtower Parking，经东入口。','Lipan Point 2026/6/22–12/23官方封闭，本路线不经过该观景点。','日落约18:04 MST；17:15前到 Yavapai，别18:00才开始找车位。','想在19:30拍银心，必须放弃这次南缘日落并提前赶到已核实的机位；本日默认安排是晚到Flagstaff拍其他星带。'],fallback:'若下午到得晚：删 Moran / Grandview 中间点，保留 Desert View + Mather / Yavapai。雨雪、疲劳或晚餐太晚时，可放弃完整日落，早点开去 Flagstaff。',events:[
+ {date:'2026-10-06',short:'10.06',weekday:'星期二',name:'河湾与地球的剖面',route:'Page → Grand Canyon South Rim → Flagstaff',theme:'grand',zone:'America/Phoenix',zoneLabel:'全天 MST · UTC−7',stay:'fairfield',wake:'07:30',drive:'约5小时 · 含园内移动',walk:'约5–7 km · 以平缓观景为主',tag:'南缘日落 · 小镇晚餐',intro:'从东门进入南缘，沿 Desert View Drive 由东向西看。默认在 Yavapai 看日落后南下 Flagstaff；若 5 日 Page 没拍到银心，也可从 Yavapai 折返东门，在 Desert View 同一晚看日落和拍银心。两条路线及回头路都在自驾地图里。',alerts:['南缘不是西峡谷玻璃桥；导航先设 Desert View Watchtower Parking，从东门入园。','Lipan Point 2026/6/22–12/23官方封闭，本路线不经过该观景点。','A 线：17:00 到 Yavapai 等约18:04日落，然后南下住宿。','B 线：16:15 前从 Yavapai 折返约38 km到 Desert View，争取17:15到；在同一地点等日落和天黑拍银心，约19:50才去酒店。天气或体力不好就走 A 线。'],fallback:'若下午到得晚：删 Moran / Grandview 中间点。B 线必须预留折返与夜间驾驶；如已晚于16:15、起云或司机疲劳，改走 A 线，不为追银心赶路。',events:[
   ev('07:30','08:00','rest','起床，整理行李','今天退房后不再回 Page。'),
   ev('08:00','08:40','food','Home2 早餐','前台确认供餐时间，补充水和零食。','home2'),
   ev('08:40','09:00','drive','退房 → 马蹄湾停车场','约15分钟车程，停 City of Page 管理的停车场。','horse',['停车费不含在国家公园年卡里；以入口实际公示为准。'],{origin:'home2'}),
