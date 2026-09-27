@@ -72,3 +72,25 @@ body{background:radial-gradient(circle at 80% 0,#e8eee5 0,transparent 34%),var(-
 @media(max-width:920px){.road-atlas{grid-template-columns:1fr}.atlas-detail{border-left:0;border-top:1px solid #d7ddd3}.atlas-detail-head{padding:20px}.atlas-stop-scroll{max-height:240px}.map-choice{align-items:stretch;flex-direction:column}.map-choice-buttons{justify-content:flex-start}}
 @media(max-width:760px){.topbar .brand{font-size:18px}.brand small{font-size:7px}.topbar .icon-btn{font-size:10px}.mobile-nav{padding-left:3px;padding-right:3px}.mobile-nav a{min-width:0;flex:1;font-size:19px}.mobile-nav a span{font-size:9px}.map-heading{display:block}.map-heading h1{font-size:34px}.map-edition{display:none}.map-day-picker{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.map-day-picker button{padding:9px 10px;min-height:76px}.map-day-picker strong{font-size:15px}.map-day-picker small{font-size:9px}.map-choice,.day6-route-picker{flex-direction:column;align-items:stretch;padding:12px}.map-choice-buttons,.day6-route-picker>div:last-child{justify-content:flex-start}.map-choice button,.day6-route-picker button{font-size:10px}.road-atlas{min-height:0}.atlas-map,#route-svg{height:390px;min-height:390px}.atlas-map-top{left:10px;top:10px;right:10px}.atlas-map-title,.atlas-map-sub{font-size:9px;padding:6px}.atlas-map-sub{max-width:128px;text-align:right}.map-controls{right:10px;bottom:48px}.map-legend{left:10px;bottom:10px;font-size:9px;gap:7px}.atlas-detail-head h2{font-size:20px}.atlas-footnotes{grid-template-columns:1fr}.atlas-footnotes p{font-size:11px}.atlas-sources{display:block;padding:17px}.atlas-sources>div:last-child{grid-template-columns:1fr 1fr;margin-top:13px}}
 @media print{.road-atlas,.map-day-picker,.map-choice,.day6-route-picker{display:none!important}}
+
+/* Whole-drive view: a quiet overview, with the four days as the navigation key. */
+.map-day-picker-all{grid-template-columns:repeat(5,minmax(0,1fr))}
+.overview-atlas{border:1px solid #cdd6cc;border-radius:14px;overflow:hidden;box-shadow:0 20px 50px #152f2316}
+.overview-map{height:600px}
+.overview-map #route-svg{height:600px;min-height:600px}
+.overview-road{fill:none;stroke:var(--route-color);stroke-width:13;stroke-linejoin:round;stroke-linecap:round;opacity:.9}
+.overview-road.backtrack{stroke:#b8623d;stroke-width:16;stroke-dasharray:7 6}
+.overview-place circle{fill:#fffdf8;stroke:#294e44;stroke-width:2.5;filter:url(#pin-shadow)}
+.overview-place text{fill:#284a43;paint-order:stroke;stroke:#f0f1e9;stroke-width:5px;stroke-linejoin:round;font:700 13px Georgia,'Microsoft YaHei',sans-serif}
+.overview-route-days{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:13px 0}
+.overview-route-day{text-align:left;border:1px solid var(--line);border-top:4px solid var(--route-color);border-radius:9px;background:#fffdf8;padding:15px 17px;min-width:0;box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s}
+.overview-route-day:hover{transform:translateY(-3px);box-shadow:0 16px 35px #173a2a1b}
+.overview-route-day span,.overview-route-day strong,.overview-route-day small{display:block}
+.overview-route-date{font:11px Georgia;color:var(--route-color);letter-spacing:1px}
+.overview-route-day strong{font:600 20px var(--serif);margin:7px 0 2px}
+.overview-route-day small{color:var(--muted);font-size:11px;line-height:1.55}
+.overview-route-km{border-top:1px solid var(--line);margin-top:15px;padding-top:10px;color:var(--route-color);font-size:11px;font-weight:650}
+.overview-map-note{margin:14px 0 30px;color:var(--muted);font-size:11px;line-height:1.7}
+@media(max-width:900px){.overview-route-days{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.map-day-picker-all{grid-template-columns:repeat(2,minmax(0,1fr))}.map-day-picker-all button:first-child{grid-column:1/-1;min-height:64px}.overview-map,.overview-map #route-svg{height:430px;min-height:430px}.overview-route-days{gap:7px}.overview-route-day{padding:11px}.overview-route-day strong{font-size:16px}.overview-route-day small{font-size:10px}.overview-map .atlas-map-title{max-width:180px}}
+@media print{.overview-atlas,.overview-route-days{display:none!important}}

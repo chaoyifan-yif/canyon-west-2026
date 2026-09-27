@@ -1,4 +1,4 @@
-const CACHE='canyon-guide-v7-20260927';
+const CACHE='canyon-guide-v8-20260927';
 const ASSETS=['./','./index.html','./styles.css','./data.js','./guide.js','./app.js','./features.js','./route-geometry.js','./route-map.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('canyon-guide-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
