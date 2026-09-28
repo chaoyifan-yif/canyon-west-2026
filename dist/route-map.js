@@ -53,10 +53,10 @@ function selectMapLeg(next){mapLeg=Math.max(0,Math.min(next,mapLegs().length-1))
 function zoomRouteMap(factor){if(!mapView)return;const [x,y,w,h]=mapView,nw=w*factor,nh=h*factor;mapView=[x+(w-nw)/2,y+(h-nh)/2,nw,nh];drawRouteMap();}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-map-day],[data-map-variant],[data-map-leg],[data-map-stop],[data-map-zoom]');if(!b)return;if(b.dataset.mapDay!==undefined)chooseMapDay(+b.dataset.mapDay);else if(b.dataset.mapVariant)chooseMapVariant(b.dataset.mapVariant);else if(b.dataset.mapLeg!==undefined)selectMapLeg(+b.dataset.mapLeg);else if(b.dataset.mapStop!==undefined)selectMapLeg(Math.max(0,+b.dataset.mapStop-1));else if(b.dataset.mapZoom==='fit'){mapView=mapFit(mapLegs());drawRouteMap();}else zoomRouteMap(b.dataset.mapZoom==='in'?.75:1.33);});
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.map-pin')){e.preventDefault();selectMapLeg(Math.max(0,+e.target.dataset.mapStop-1));}});
-document.addEventListener('pointerdown',e=>{const svg=e.target.closest('#route-svg');if(!svg||e.target.closest('[data-map-leg],[data-map-stop]'))return;mapPointer={x:e.clientX,y:e.clientY,view:[...mapView]};svg.setPointerCapture(e.pointerId);});
+document.addEventListener('pointerdown',e=>{const svg=e.target.closest('#route-svg');if(!svg||e.target.closest('[data-map-leg],[data-map-stop]')||(typeof mapInteractive!=='undefined'&&!mapInteractive&&matchMedia('(max-width:760px)').matches))return;mapPointer={x:e.clientX,y:e.clientY,view:[...mapView]};svg.setPointerCapture(e.pointerId);});
 document.addEventListener('pointermove',e=>{if(!mapPointer)return;const svg=document.querySelector('#route-svg');if(!svg)return;const r=svg.getBoundingClientRect(),v=mapPointer.view;mapView=[v[0]-(e.clientX-mapPointer.x)*v[2]/r.width,v[1]-(e.clientY-mapPointer.y)*v[3]/r.height,v[2],v[3]];drawRouteMap();});
 document.addEventListener('pointerup',()=>{mapPointer=null;});
-document.addEventListener('wheel',e=>{const svg=e.target.closest('#route-svg');if(!svg)return;e.preventDefault();zoomRouteMap(e.deltaY<0?.9:1.1);},{passive:false});
+document.addEventListener('wheel',e=>{const svg=e.target.closest('#route-svg');if(!svg||(typeof mapInteractive!=='undefined'&&!mapInteractive&&matchMedia('(max-width:760px)').matches))return;e.preventDefault();zoomRouteMap(e.deltaY<0?.9:1.1);},{passive:false});
 
 /* The day page and print view use the same branch as the map. The original A
    schedule is kept intact, so changing B back to A never loses checkmarks. */
@@ -93,7 +93,7 @@ function fullRouteMap(){
   const legs=groups.flatMap(g=>g.legs);
   if(!mapView)mapView=mapFit(legs);
   const total=legs.reduce((n,l)=>n+l.km,0);
-  const places=[['rental','Las Vegas',17,22],['zion','Zion',13,-18],['hatch','Hatch',14,-15],['home2','Page',17,22],['desert','大峡谷',15,-18],['fairfield','Flagstaff',14,22]];
+  const places=[['rental','Las Vegas',17,22],['zion','Zion',13,-18],['hatch','Bryce / Hatch',14,-15],['home2','Page',17,22],['desert','大峡谷',15,-18],['fairfield','Flagstaff',14,22]];
   const labels=places.map(([id,name,dx,dy])=>{const leg=legs.find(l=>l.from===id)||legs.find(l=>l.to===id);const p=leg.from===id?leg.line[0]:leg.line.at(-1);const [x,y]=mapGeo(p);return `<g class="overview-place" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><circle r="6"/><text x="${dx}" y="${dy}">${esc(name)}</text></g>`;}).join('');
   return `<div class="page-heading map-heading"><div><p class="eyebrow">ROAD ATLAS / 自驾路线</p><h1>绕过峡谷，<em>回到 Vegas。</em></h1><p>这是 10 月 4–7 日的自驾环线。按颜色看每天怎么走，点开日期再看每一段路和导航地址。路形是规划快照，不含实时交通。</p></div><span class="map-edition">2026 · NV / UT / AZ</span></div>
   <div class="map-day-picker map-day-picker-all" role="group" aria-label="选择自驾日期"><button type="button" data-map-day="6" class="active" aria-pressed="true"><span>10.04—10.07</span><strong>全程总览</strong><small>四天自驾环线</small></button>${MAP_DAYS.map((d,i)=>`<button type="button" data-map-day="${i+2}" aria-pressed="false"><span>${d.date}</span><strong>${d.title}</strong><small>${d.subtitle}</small></button>`).join('')}</div>
