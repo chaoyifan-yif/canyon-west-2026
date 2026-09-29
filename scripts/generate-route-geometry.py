@@ -12,7 +12,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 STOPS = {
     "rental": (-115.1645060, 36.0600487),
+    "walmart": (-115.11568, 36.267711),
+    "zionvc": (-112.987139, 37.200190),
     "zion": (-112.940495, 37.213178),
+    "brycepoint": (-112.15666, 37.603990),
     "sunset": (-112.1671190, 37.6234283),
     "hatch": (-112.4343730, 37.6497019),  # town centre, never the private Airbnb door
     "sunrise": (-112.1645174, 37.6312455),
@@ -31,7 +34,8 @@ STOPS = {
     "kingman": (-114.0589690, 35.1891481),
 }
 PLANS = {
-    "oct04": ["rental", "zion", "sunset", "hatch"],
+    "oct04_overlook": ["rental", "walmart", "zionvc", "zion", "sunset", "sunrise", "hatch"],
+    "oct04_canyon": ["rental", "walmart", "zionvc", "sunrise", "hatch"],
     "oct05": ["hatch", "sunrise", "ken", "home2"],
     "oct06_direct": ["home2", "horse", "desert", "navajo", "moran", "grandview", "mather", "yavapai", "fairfield"],
     "oct06_core": ["home2", "horse", "desert", "navajo", "moran", "grandview", "mather", "yavapai", "desert", "fairfield"],

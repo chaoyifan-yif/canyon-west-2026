@@ -1,0 +1,34 @@
+const { chromium } = require('C:/Users/56348/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const { pathToFileURL } = require('node:url');
+const path = require('node:path');
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+
+(async () => {
+  const browser = await chromium.launch({ headless: true, channel: 'chrome' });
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, ignoreHTTPSErrors: true });
+  const errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+  const base = process.env.CANYON_TEST_URL || pathToFileURL(path.join(__dirname, 'dist', 'index.html')).href;
+  await page.goto(base + '#daily/2');
+  await page.waitForSelector('.timeline');
+  assert.match(await page.locator('.timeline').innerText(), /Walmart/);
+  assert.match(await page.locator('.timeline').innerText(), /Visitor Center/);
+  assert.match(await page.locator('.timeline').innerText(), /Canyon Overlook/);
+  assert.ok(await page.locator('[data-star-fold]').count());
+  assert.ok(await page.locator('[data-day2-variant="canyon"]').count());
+  await page.locator('[data-day2-variant="canyon"]').click();
+  assert.match(await page.locator('.timeline').innerText(), /Riverside Walk/);
+  assert.match(await page.locator('.timeline').innerText(), /Walmart/);
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  await page.goto(base + '#overview');
+  await page.locator('[data-map-day="6"]').first().click();
+  assert.ok(await page.locator('#route-svg .overview-road').count() > 15);
+  assert.deepEqual(errors, []);
+  fs.mkdirSync(path.join(__dirname, 'qa'), { recursive: true });
+  await page.goto(base + '#daily/2');
+  await page.screenshot({ path: path.join(__dirname, 'qa', 'day2-mobile-viewport.png') });
+  await page.screenshot({ path: path.join(__dirname, 'qa', 'day2-mobile.png'), fullPage: true });
+  console.log('Day 2 Chrome mobile smoke passed: both branches, map, stars, no overflow/errors');
+  await browser.close();
+})().catch(e => { console.error(e); process.exit(1); });

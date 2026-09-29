@@ -15,6 +15,7 @@ const root = path.join(__dirname, "dist"),
     "route-geometry.js",
     "route-map.js",
     "ui.js",
+    "day2.js",
   ];
 const errors = [],
   checks = [];
@@ -124,6 +125,45 @@ function contrast(selector) {
     assert.equal(d.querySelectorAll(".chapter-card").length, 6);
     assert.equal(d.querySelectorAll(".map-switch button").length, 5);
   });
+  click('[data-map-day="2"]');
+  ok("October 4 map includes Walmart and legal Zion stop", () => {
+    assert.match(d.querySelector(".atlas-stops").textContent, /Walmart/);
+    assert.match(d.querySelector(".atlas-stops").textContent, /Visitor Center/);
+    assert.match(d.querySelector(".atlas-stops").textContent, /Canyon Overlook/);
+    assert.equal(d.querySelectorAll(".map-road").length, 6);
+  });
+  click('[data-day2-variant="canyon"]');
+  ok("October 4 canyon branch switches map and schedule", () => {
+    assert.match(d.querySelector(".atlas-stops").textContent, /Visitor Center/);
+    assert.equal(d.querySelectorAll(".map-road").length, 4);
+  });
+  await route("#daily/2");
+  ok("canyon route includes groceries, shuttle and Bryce stars", () => {
+    const timeline = d.querySelector(".timeline").textContent;
+    assert.match(timeline, /Walmart/);
+    assert.match(timeline, /Riverside Walk/);
+    assert.match(timeline, /Sunrise Point/);
+    assert.ok(d.querySelector('[data-star-fold]'));
+    assert.match(d.querySelector('.day6-route-picker a').href, /google.com\/maps/);
+  });
+  await route("#overview");
+  click('[data-map-day="6"]');
+  ok("full loop renders while October 4 canyon branch is selected", () => {
+    assert.ok(d.querySelectorAll(".overview-road").length > 15);
+    assert.match(d.querySelector("#home-map").textContent, /ZION/);
+  });
+  await route("#daily/2");
+  click('[data-day2-variant="overlook"]');
+  ok("Overlook route retains grocery and sunset contingency", () => {
+    const timeline=d.querySelector(".timeline").textContent;
+    assert.match(timeline, /Walmart/);
+    assert.match(timeline, /Visitor Center/);
+    assert.match(timeline, /Canyon Overlook/);
+    assert.match(timeline, /Sunset Point/);
+    assert.match(timeline, /大概率错过/);
+  });
+  await route("#overview");
+  click('[data-map-day="6"]');
   const directRoads = d.querySelectorAll(".overview-road").length;
   click('[data-map-day="4"]');
   click('[data-map-variant="core"]');
@@ -297,12 +337,12 @@ function contrast(selector) {
   let off = d.querySelector('[data-action="offline"]');
   await run('offline(document.querySelector("[data-action=offline]"))');
   const offlineHtml=await new Promise(resolve=>{const reader=new w.FileReader();reader.onload=()=>resolve(reader.result);reader.readAsText(downloadedBlob);});
-  ok("standalone offline bundle embeds styles and all seven scripts", () => {
+  ok("standalone offline bundle embeds styles and all eight scripts", () => {
     assert.match(downloaded, /离线旅行手册.html/);
     assert.match(offlineHtml, /<style>[\s\S]*\.journey-cover/);
     assert.match(offlineHtml, /const DAY_TITLES/);
     const offlineDoc=new JSDOM(offlineHtml,{runScripts:'outside-only'});
-    assert.equal(offlineDoc.window.document.querySelectorAll('script').length,7);
+    assert.equal(offlineDoc.window.document.querySelectorAll('script').length,8);
     assert.equal(offlineDoc.window.document.querySelectorAll('script[src],link[rel=stylesheet]').length,0);
     offlineDoc.window.document.querySelectorAll('script').forEach(s=>new vm.Script(s.textContent));
     offlineDoc.window.close();

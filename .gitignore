@@ -2,3 +2,5 @@ qa/
 site-v2.tar.gz
 __pycache__/
 *.pyc
+node_modules/
+.npm-cache/
